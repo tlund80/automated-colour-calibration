@@ -47,12 +47,22 @@ int main(int argc, char** argv)
   }
  #else
   vector<Vec4i> lines;
+  // Calvin
+  //vector<Point> pts;
+  // end Calvin
   HoughLinesP(dst, lines, 1, CV_PI/180, 50, 50, 80 );
   for( size_t i = 0; i < lines.size(); i++ )
   {
     Vec4i l = lines[i];
+    // Calvin
+    //pts.push_back(Point(l[0],l[1]));
+    //pts.push_back(Point(l[2],l[3]));
+    // end Calvin
     line( cdst, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(0,0,255), 1, CV_AA);
   }
+  Point pts[] = {Point(500,500),Point(600, 500),Point(550,1000),Point(450,1000)};
+  fillConvexPoly(cdst,&pts[0],4,Scalar(0,255,0), CV_AA, 0);
+  
  #endif
  imwrite( "gr.jpg", cdst);
  namedWindow("source", CV_WINDOW_NORMAL);
