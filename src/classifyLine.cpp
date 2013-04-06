@@ -59,9 +59,12 @@ int main(int argc, char** argv)
         //line( cdst, pt_a, pt_b, Scalar(0,0,255), 1, CV_AA);
     }
 
+    Point pts[] = {bestTopLeft,bestTopRight,bestBotRight,bestBotLeft};
+    fillConvexPoly(cdst,&pts[0],4,Scalar(255,255,255), CV_AA, 0);
+
     line(cdst,bestTopLeft,bestTopRight,Scalar(0,255,0),1,CV_AA);
     line(cdst,bestBotLeft,bestBotRight,Scalar(255,0,0),1,CV_AA);
-
+    
     namedWindow("source", CV_WINDOW_NORMAL);
     imshow("source", src);
     namedWindow( "detected lines", CV_WINDOW_NORMAL);// Create a window for display.
