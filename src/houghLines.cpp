@@ -47,38 +47,14 @@ int main(int argc, char** argv)
   }
  #else
   vector<Vec4i> lines;
-  vector<Vec4i> leftPoints;
   HoughLinesP(dst, lines, 1, CV_PI/180, 50, 50, 80 );
   for( size_t i = 0; i < lines.size(); i++ )
   {
     Vec4i l = lines[i];
     line( cdst, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(0,0,255), 1, CV_AA);
-    if(l[0] > 450 &&
-       l[2] < 900) {
-        leftPoints.push_back(l);
-    }
   }
 
-   // fit a line for points on the left edge
-  vector<Vec4i> leftLine; 
-  fitLine(leftPoints,leftLine,CV_DIST_L1,0,0.01,0.01);
-  cout << leftLine[0] << endl;
-  // fit a line for point on the right edge
-
-  // find top left corner of quadrilateral
-
-  // top right
-
-  // bottom right
-
-  // bottom left
-
-
-  Point pts[] = {Point(500,500),Point(600, 500),Point(550,1000),Point(450,1000)};
-  fillConvexPoly(cdst,&pts[0],4,Scalar(0,255,0), CV_AA, 0);
-  
  #endif
- imwrite( "gr.jpg", cdst);
  namedWindow("source", CV_WINDOW_NORMAL);
  imshow("source", src);
  namedWindow( "detected lines", CV_WINDOW_NORMAL);// Create a window for display.
