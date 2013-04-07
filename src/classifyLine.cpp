@@ -19,7 +19,7 @@ void help()
 int main(int argc, char** argv)
 {
     const char* filename = argc >= 2 ? argv[1] : "pic1.jpg";
-
+    Mat colourSrc = imread(filename, 1);
     Mat src = imread(filename, 0);
     if(src.empty())
     {
@@ -108,9 +108,28 @@ int main(int argc, char** argv)
     Point h_pts[] = {hBestTopLeft,hBestTopRight,hBestBotRight,hBestBotLeft};
     Point v_pts[] = {vBestTopLeft,vBestTopRight,vBestBotRight,vBestBotLeft};
 
+    vector<Point> h_pts_v;
+    for(int i = 0; i < 4; ++i) {
+        h_pts_v.push_back(h_pts[i]);
+    }
+
     // fill the field line area
     fillConvexPoly(cdst,&h_pts[0],4,Scalar(0,0,255), CV_AA, 0);
     fillConvexPoly(cdst,&v_pts[0],4,Scalar(0,0,255), CV_AA, 0);
+    
+    // if the point is inside or on the contour
+    for(int y = 0; y < colourSrc.rows; ++y) {
+        for(int x = 0; x < colourSrc.cols; ++x) {
+            Point p = Point(x,y);
+            Vec3b colour = colourSrc.at<Vec3b>(p);
+            if(pointPolygonTest(h_pts_v,p,false) >= 0) {
+                cout << "(x=" << x << ", y=" << y << ")" << endl;
+                cout << static_cast<int>(colour.val[0]) << endl;
+                cout << static_cast<int>(colour.val[1]) << endl;
+                cout << static_cast<int>(colour.val[2]) << endl;
+            }
+        }
+    }
     
     // highlight the horizontal field line's edges
     line(cdst,hBestTopLeft,hBestTopRight,Scalar(0,255,0),1,CV_AA);
@@ -121,8 +140,7 @@ int main(int argc, char** argv)
     line(cdst,vBestTopRight,vBestBotRight,Scalar(0,255,0),1,CV_AA);
     
     // Overlay the template used
-    Mat orig = imread(filename,1);
-    Mat temp = orig.clone();
+    Mat temp = colourSrc.clone();
     Point template_pts[] = {Point(0,90), Point(640,120), Point(640,160),Point(0,140)};
     fillConvexPoly(temp,&template_pts[0],4,Scalar(255,0,0), CV_AA, 0);
     Point template_pts_2[] = {Point(380,100), Point(450,100), Point(480,480),Point(350,480)};
@@ -131,9 +149,7 @@ int main(int argc, char** argv)
     double alpha = 0.6;
     double beta = 1.0 - alpha;
     double gamma = 0.0;
-    addWeighted(orig,alpha,temp,beta,gamma,blended);
-
-
+    addWeighted(colourSrc,alpha,temp,beta,gamma,blended);
 
     namedWindow("blended", CV_WINDOW_NORMAL);
     imshow("blended", blended);
