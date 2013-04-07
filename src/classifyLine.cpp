@@ -109,35 +109,40 @@ int main(int argc, char** argv)
     Point v_pts[] = {vBestTopLeft,vBestTopRight,vBestBotRight,vBestBotLeft};
 
     vector<Point> h_pts_v;
+    vector<Point> v_pts_v;
     for(int i = 0; i < 4; ++i) {
         h_pts_v.push_back(h_pts[i]);
+        v_pts_v.push_back(v_pts[i]);
     }
 
     // fill the field line area
-    fillConvexPoly(cdst,&h_pts[0],4,Scalar(0,0,255), CV_AA, 0);
-    fillConvexPoly(cdst,&v_pts[0],4,Scalar(0,0,255), CV_AA, 0);
+    //fillConvexPoly(cdst,&h_pts[0],4,Scalar(0,0,255), CV_AA, 0);
+    //fillConvexPoly(cdst,&v_pts[0],4,Scalar(0,0,255), CV_AA, 0);
     
     // if the point is inside or on the contour
     for(int y = 0; y < colourSrc.rows; ++y) {
         for(int x = 0; x < colourSrc.cols; ++x) {
             Point p = Point(x,y);
-            Vec3b colour = colourSrc.at<Vec3b>(p);
-            if(pointPolygonTest(h_pts_v,p,false) >= 0) {
-                cout << "(x=" << x << ", y=" << y << ")" << endl;
-                cout << static_cast<int>(colour.val[0]) << endl;
-                cout << static_cast<int>(colour.val[1]) << endl;
-                cout << static_cast<int>(colour.val[2]) << endl;
+            //Vec3b colour = colourSrc.at<Vec3b>(p);
+            if(pointPolygonTest(h_pts_v,p,false) >= 0 ||
+               pointPolygonTest(v_pts_v,p,false) >= 0) {
+                //cout << "(x=" << x << ", y=" << y << ")" << endl;
+                //cout << static_cast<int>(colour.val[0]) << endl;
+                //cout << static_cast<int>(colour.val[1]) << endl;
+                //cout << static_cast<int>(colour.val[2]) << endl;
+                line(cdst,p,p,Scalar(255,255,0),2,CV_AA);
+                line(cdst,p,p,Scalar(255,255,0),2,CV_AA);
             }
         }
     }
     
     // highlight the horizontal field line's edges
-    line(cdst,hBestTopLeft,hBestTopRight,Scalar(0,255,0),1,CV_AA);
-    line(cdst,hBestBotLeft,hBestBotRight,Scalar(0,255,0),1,CV_AA);
+    line(cdst,hBestTopLeft,hBestTopRight,Scalar(0,0,255),1,CV_AA);
+    line(cdst,hBestBotLeft,hBestBotRight,Scalar(0,0,255),1,CV_AA);
 
     // highlight the vertical field line's edges
-    line(cdst,vBestTopLeft,vBestBotLeft,Scalar(0,255,0),1,CV_AA);
-    line(cdst,vBestTopRight,vBestBotRight,Scalar(0,255,0),1,CV_AA);
+    line(cdst,vBestTopLeft,vBestBotLeft,Scalar(0,0,255),1,CV_AA);
+    line(cdst,vBestTopRight,vBestBotRight,Scalar(0,0,255),1,CV_AA);
     
     // Overlay the template used
     Mat temp = colourSrc.clone();
