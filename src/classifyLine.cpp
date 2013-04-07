@@ -108,15 +108,36 @@ int main(int argc, char** argv)
     Point h_pts[] = {hBestTopLeft,hBestTopRight,hBestBotRight,hBestBotLeft};
     Point v_pts[] = {vBestTopLeft,vBestTopRight,vBestBotRight,vBestBotLeft};
 
-    fillConvexPoly(cdst,&h_pts[0],4,Scalar(255,255,255), CV_AA, 0);
-    fillConvexPoly(cdst,&v_pts[0],4,Scalar(255,255,255), CV_AA, 0);
+    // fill the field line area
+    fillConvexPoly(cdst,&h_pts[0],4,Scalar(0,0,255), CV_AA, 0);
+    fillConvexPoly(cdst,&v_pts[0],4,Scalar(0,0,255), CV_AA, 0);
     
+    // highlight the horizontal field line's edges
     line(cdst,hBestTopLeft,hBestTopRight,Scalar(0,255,0),1,CV_AA);
     line(cdst,hBestBotLeft,hBestBotRight,Scalar(0,255,0),1,CV_AA);
 
-    line(cdst,vBestTopLeft,vBestBotLeft,Scalar(0,0,255),1,CV_AA);
-    line(cdst,vBestTopRight,vBestBotRight,Scalar(0,0,255),1,CV_AA);
+    // highlight the vertical field line's edges
+    line(cdst,vBestTopLeft,vBestBotLeft,Scalar(0,255,0),1,CV_AA);
+    line(cdst,vBestTopRight,vBestBotRight,Scalar(0,255,0),1,CV_AA);
     
+    // Overlay the template used
+    Mat orig = imread(filename,1);
+    Mat temp = orig.clone();
+    Point template_pts[] = {Point(0,90), Point(640,120), Point(640,160),Point(0,140)};
+    fillConvexPoly(temp,&template_pts[0],4,Scalar(255,0,0), CV_AA, 0);
+    Point template_pts_2[] = {Point(380,100), Point(450,100), Point(480,480),Point(350,480)};
+    fillConvexPoly(temp,&template_pts_2[0],4,Scalar(255,0,0), CV_AA, 0);
+    Mat blended;
+    double alpha = 0.6;
+    double beta = 1.0 - alpha;
+    double gamma = 0.0;
+    addWeighted(orig,alpha,temp,beta,gamma,blended);
+
+
+
+    namedWindow("blended", CV_WINDOW_NORMAL);
+    imshow("blended", blended);
+
     namedWindow("source", CV_WINDOW_NORMAL);
     imshow("source", src);
     namedWindow( "detected lines", CV_WINDOW_NORMAL);// Create a window for display.
