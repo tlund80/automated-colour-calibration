@@ -31,6 +31,7 @@ Feature::Feature(vector<Point> &region, vector<Rect> &vertexBounds, int minAbsAn
 
 }
 
+void fillFeatures(Mat &img, vector<Feature> &features);
 void expandBoundingArea(vector<Vec4i> &lines, vector<Feature> &features);
 void updateBoundingBox(vector<Point> &fillRegion, Point p, vector<Rect> &vertexBounds);
 bool inRange(double x, double min, double max);
@@ -90,20 +91,7 @@ int main(int argc, char** argv) {
 
     expandBoundingArea(lines,features);
 
-    // if the point is inside or on the contour
-    // colour it in
-    for(int y = 0; y < colourSrc.rows; ++y) {
-        for(int x = 0; x < colourSrc.cols; ++x) {
-            Point p = Point(x,y);
-            //Vec3b colour = colourSrc.at<Vec3b>(p);
-            for(size_t i = 0; i < features.size(); ++i) {
-                // if the point is in the feature, colour it in
-                if(pointPolygonTest(features[i].region,p,false) >= 0) {
-                    line(outputEdgeMap_3ch,p,p,Scalar(255,255,0),2,CV_AA);
-                }
-            }
-        }
-    }
+    fillFeatures(outputEdgeMap_3ch,features);
     
     // For each feature, highlight the bounding area's edges
     for(size_t i = 0; i < features.size(); ++i) {
@@ -137,6 +125,26 @@ int main(int argc, char** argv) {
     return 0;
 }
 
+// Given the features, fill in pixels that are within it
+void fillFeatures(Mat &img, vector<Feature> &features) {
+    // if the point is inside or on the contour
+    // colour it in
+    for(int y = 0; y < img.rows; ++y) {
+        for(int x = 0; x < img.cols; ++x) {
+            Point p = Point(x,y);
+            //Vec3b colour = colourSrc.at<Vec3b>(p);
+            for(size_t i = 0; i < features.size(); ++i) {
+                // if the point is in the feature, colour it in
+                if(pointPolygonTest(features[i].region,p,false) >= 0) {
+                    line(img,p,p,Scalar(255,255,0),2,CV_AA);
+                }
+            }
+        }
+    }
+}
+
+// Given the detected HoughLines and the features to be detected
+// expand the boudning area of the features if they meet certain conditions
 void expandBoundingArea(vector<Vec4i> &lines, vector<Feature> &features) {
     for(size_t i = 0; i < lines.size(); i++) {
         Vec4i l = lines[i];
