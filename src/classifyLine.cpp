@@ -31,6 +31,7 @@ Feature::Feature(vector<Point> &region, vector<Rect> &vertexBounds, int minAbsAn
 
 }
 
+void overlayTemplate(Mat &src, Mat &output, vector<Feature> features);
 void highLightFeatures(Mat &img, vector<Feature> &features);
 void fillFeatures(Mat &img, vector<Feature> &features);
 void expandBoundingArea(vector<Vec4i> &lines, vector<Feature> &features);
@@ -90,23 +91,17 @@ int main(int argc, char** argv) {
     features.push_back(Feature(hLineRegion,hVertexBounds,0,20));
     features.push_back(Feature(vLineRegion,vVertexBounds,70,90));
 
+    Mat blended;
+    overlayTemplate(colourSrc,blended,features); 
+
+    // Now update the region defined in the template to contain a feature
+    // to converge to the feature
     expandBoundingArea(lines,features);
 
     fillFeatures(outputEdgeMap_3ch,features);
     
     highLightFeatures(outputEdgeMap_3ch,features);
 
-    // Overlay the template used
-    Mat temp = colourSrc.clone();
-    Point template_pts[] = {Point(0,90), Point(640,120), Point(640,160),Point(0,140)};
-    fillConvexPoly(temp,&template_pts[0],4,Scalar(255,0,0), CV_AA, 0);
-    Point template_pts_2[] = {Point(380,100), Point(450,100), Point(480,480),Point(350,480)};
-    fillConvexPoly(temp,&template_pts_2[0],4,Scalar(255,0,0), CV_AA, 0);
-    Mat blended;
-    double alpha = 0.6;
-    double beta = 1.0 - alpha;
-    double gamma = 0.0;
-    addWeighted(colourSrc,alpha,temp,beta,gamma,blended);
 
     namedWindow("blended", CV_WINDOW_NORMAL);
     imshow("blended", blended);
@@ -118,6 +113,32 @@ int main(int argc, char** argv) {
     waitKey();
 
     return 0;
+}
+
+void overlayTemplate(Mat &src, Mat &output, vector<Feature> features) {
+    // Overlay the template used
+    Mat temp = src.clone();
+    
+    for(size_t i = 0; i < features.size(); ++i) {
+        //Point template_pts[] = {Point(0,90), Point(640,120), Point(640,160),Point(0,140)};
+        Feature f = features[i];
+        vector<Point> template_pts;
+        template_pts.push_back(Point(f.vertexBounds[0].x, f.vertexBounds[0].y));
+        template_pts.push_back(Point(f.vertexBounds[1].x + f.vertexBounds[1].width, f.vertexBounds[1].y));
+        template_pts.push_back(Point(f.vertexBounds[2].x + f.vertexBounds[2].width, f.vertexBounds[2].y + f.vertexBounds[2].height));
+        template_pts.push_back(Point(f.vertexBounds[3].x, f.vertexBounds[3].y + f.vertexBounds[3].height));
+
+        // &template_pts[0] is the first element of the vector
+        fillConvexPoly(temp,&template_pts[0],4,Scalar(255,0,0), CV_AA, 0);
+    }
+
+    //Point template_pts_2[] = {Point(380,100), Point(450,100), Point(480,480),Point(350,480)};
+    //fillConvexPoly(temp,&template_pts_2[0],4,Scalar(255,0,0), CV_AA, 0);
+    
+    double alpha = 0.6;
+    double beta = 1.0 - alpha;
+    double gamma = 0.0;
+    addWeighted(src,alpha,temp,beta,gamma,output);
 }
 
 // Given the features, highlight the bounds
