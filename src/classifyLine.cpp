@@ -13,6 +13,25 @@ using namespace std;
 // [2] = botRight
 // [3] = botLeft
 
+class Feature {
+public: 
+    vector<Point> region;
+    vector<Rect> vertexBounds;
+    int minAbsAngle;
+    int maxAbsAngle;
+
+    Feature(vector<Point> &region, vector<Rect> &vertexBounds, int minAbsAngle, int maxAbsAngle);
+};
+
+Feature::Feature(vector<Point> &region, vector<Rect> &vertexBounds, int minAbsAngle, int maxAbsAngle) {
+    this->region = region;
+    this->vertexBounds = vertexBounds;
+    this->minAbsAngle = minAbsAngle;
+    this->maxAbsAngle = maxAbsAngle;
+
+}
+
+void expandBoundingArea(vector<Vec4i> &lines, vector<Feature> &features);
 void updateBoundingBox(vector<Point> &fillRegion, Point p, vector<Rect> &vertexBounds);
 bool inRange(double x, double min, double max);
 double radToDeg(double thetaInRad);
@@ -59,39 +78,17 @@ int main(int argc, char** argv) {
     vLineRegion.push_back(Point(415,240));
     vLineRegion.push_back(Point(415,240));
 
-     vector<Rect> vVertexBounds;
-     vVertexBounds.push_back(Rect(Point(380,110),Point(415,240)));
-     vVertexBounds.push_back(Rect(Point(415,110),Point(440,240)));
-     vVertexBounds.push_back(Rect(Point(415,240),Point(475,480)));
-     vVertexBounds.push_back(Rect(Point(360,240),Point(415,480)));
+    vector<Rect> vVertexBounds;
+    vVertexBounds.push_back(Rect(Point(380,110),Point(415,240)));
+    vVertexBounds.push_back(Rect(Point(415,110),Point(440,240)));
+    vVertexBounds.push_back(Rect(Point(415,240),Point(475,480)));
+    vVertexBounds.push_back(Rect(Point(360,240),Point(415,480)));
 
-    for(size_t i = 0; i < lines.size(); i++) {
-        Vec4i l = lines[i];
-        // End points of detected lines
-        Point pts[] = {Point(l[0], l[1]),
-                       Point(l[2], l[3])};
+    vector<Feature> features;
+    features.push_back(Feature(hLineRegion,hVertexBounds,0,20));
+    features.push_back(Feature(vLineRegion,vVertexBounds,70,90));
 
-        // then theta is the principal arctan of the line (atan not atan2)
-        // Hence -90 < radToDeg(theta) < 90
-        double thetaInRad = (l[2] == l[0]) ? M_PI/2 : atan((double)(l[3]-l[1])/(l[2]-l[0]));
-        double thetaInDeg = radToDeg(thetaInRad);
-        cout << "thetaInDeg = " << thetaInDeg << endl;
-
-        // For the almost horizontal field line
-        // Only consider detected line segments with -20 < theta < 20 
-        if(inRange(thetaInDeg,-20,20)) {
-            for(int i = 0; i < 2; ++i) {
-                updateBoundingBox(hLineRegion,pts[i],hVertexBounds);
-            }
-        }
-        // For the almost vertical field line
-        // Only consider detected line segments with  70 < theta < 90 && -90 < theta < -70
-        if(inRange(thetaInDeg,70,90) || inRange(thetaInDeg,-90,-70)) {
-            for(int i = 0; i < 2; ++i) {
-                updateBoundingBox(vLineRegion,pts[i],vVertexBounds);
-            }
-        }
-    }
+    expandBoundingArea(lines,features);
 
     // if the point is inside or on the contour
     // colour it in
@@ -99,22 +96,23 @@ int main(int argc, char** argv) {
         for(int x = 0; x < colourSrc.cols; ++x) {
             Point p = Point(x,y);
             //Vec3b colour = colourSrc.at<Vec3b>(p);
-            if(pointPolygonTest(hLineRegion,p,false) >= 0 ||
-               pointPolygonTest(vLineRegion,p,false) >= 0) {
-                line(outputEdgeMap_3ch,p,p,Scalar(255,255,0),2,CV_AA);
-                line(outputEdgeMap_3ch,p,p,Scalar(255,255,0),2,CV_AA);
+            for(size_t i = 0; i < features.size(); ++i) {
+                // if the point is in the feature, colour it in
+                if(pointPolygonTest(features[i].region,p,false) >= 0) {
+                    line(outputEdgeMap_3ch,p,p,Scalar(255,255,0),2,CV_AA);
+                }
             }
         }
     }
     
-    // highlight the horizontal field line's edges
-    line(outputEdgeMap_3ch,hLineRegion[0],hLineRegion[1],Scalar(0,0,255),1,CV_AA);
-    line(outputEdgeMap_3ch,hLineRegion[3],hLineRegion[2],Scalar(0,0,255),1,CV_AA);
+    // For each feature, highlight the bounding area's edges
+    for(size_t i = 0; i < features.size(); ++i) {
+        line(outputEdgeMap_3ch,features[i].region[0],features[i].region[1],Scalar(0,0,255),1,CV_AA);
+        line(outputEdgeMap_3ch,features[i].region[1],features[i].region[2],Scalar(0,0,255),1,CV_AA);
+        line(outputEdgeMap_3ch,features[i].region[2],features[i].region[3],Scalar(0,0,255),1,CV_AA);
+        line(outputEdgeMap_3ch,features[i].region[3],features[i].region[0],Scalar(0,0,255),1,CV_AA);
+    }
 
-    // highlight the vertical field line's edges
-    line(outputEdgeMap_3ch,vLineRegion[0],vLineRegion[3],Scalar(0,0,255),1,CV_AA);
-    line(outputEdgeMap_3ch,vLineRegion[1],vLineRegion[2],Scalar(0,0,255),1,CV_AA);
-    
     // Overlay the template used
     Mat temp = colourSrc.clone();
     Point template_pts[] = {Point(0,90), Point(640,120), Point(640,160),Point(0,140)};
@@ -139,6 +137,31 @@ int main(int argc, char** argv) {
     return 0;
 }
 
+void expandBoundingArea(vector<Vec4i> &lines, vector<Feature> &features) {
+    for(size_t i = 0; i < lines.size(); i++) {
+        Vec4i l = lines[i];
+        // End points of detected lines
+        Point pts[] = {Point(l[0], l[1]),
+            Point(l[2], l[3])};
+
+        // then theta is the principal arctan of the line (atan not atan2)
+        // Hence -90 < radToDeg(theta) < 90
+        // Hence 0 <= absThetaInDeg <= 90
+        double thetaInRad = (l[2] == l[0]) ? M_PI/2 : atan((double)(l[3]-l[1])/(l[2]-l[0]));
+        double absThetaInDeg = abs(radToDeg(thetaInRad));
+        cout << "absThetaInDeg = " << absThetaInDeg << endl;
+
+        for(size_t k = 0; k < features.size(); ++k) {
+            if(inRange(absThetaInDeg,features[k].minAbsAngle,features[k].maxAbsAngle)) {
+                for(int i = 0; i < 2; ++i) {
+                    cout << "Before: " << features[k].region << endl;
+                    updateBoundingBox(features[k].region,pts[i],features[k].vertexBounds);
+                    cout << "After: " << features[k].region << endl;
+                }
+            }
+        }
+    }
+}
 
 // Given a point, if it increases the scope of the bounding box,
 // update the bounding box
