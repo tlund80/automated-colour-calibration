@@ -31,6 +31,7 @@ Feature::Feature(vector<Point> &region, vector<Rect> &vertexBounds, int minAbsAn
 
 }
 
+void highLightFeatures(Mat &img, vector<Feature> &features);
 void fillFeatures(Mat &img, vector<Feature> &features);
 void expandBoundingArea(vector<Vec4i> &lines, vector<Feature> &features);
 void updateBoundingBox(vector<Point> &fillRegion, Point p, vector<Rect> &vertexBounds);
@@ -93,13 +94,7 @@ int main(int argc, char** argv) {
 
     fillFeatures(outputEdgeMap_3ch,features);
     
-    // For each feature, highlight the bounding area's edges
-    for(size_t i = 0; i < features.size(); ++i) {
-        line(outputEdgeMap_3ch,features[i].region[0],features[i].region[1],Scalar(0,0,255),1,CV_AA);
-        line(outputEdgeMap_3ch,features[i].region[1],features[i].region[2],Scalar(0,0,255),1,CV_AA);
-        line(outputEdgeMap_3ch,features[i].region[2],features[i].region[3],Scalar(0,0,255),1,CV_AA);
-        line(outputEdgeMap_3ch,features[i].region[3],features[i].region[0],Scalar(0,0,255),1,CV_AA);
-    }
+    highLightFeatures(outputEdgeMap_3ch,features);
 
     // Overlay the template used
     Mat temp = colourSrc.clone();
@@ -123,6 +118,17 @@ int main(int argc, char** argv) {
     waitKey();
 
     return 0;
+}
+
+// Given the features, highlight the bounds
+void highLightFeatures(Mat &img, vector<Feature> &features) {
+    // For each feature, highlight the bounding area's edges
+    for(size_t i = 0; i < features.size(); ++i) {
+        line(img,features[i].region[0],features[i].region[1],Scalar(0,0,255),1,CV_AA);
+        line(img,features[i].region[1],features[i].region[2],Scalar(0,0,255),1,CV_AA);
+        line(img,features[i].region[2],features[i].region[3],Scalar(0,0,255),1,CV_AA);
+        line(img,features[i].region[3],features[i].region[0],Scalar(0,0,255),1,CV_AA);
+    }
 }
 
 // Given the features, fill in pixels that are within it
@@ -173,8 +179,7 @@ void expandBoundingArea(vector<Vec4i> &lines, vector<Feature> &features) {
 
 // Given a point, if it increases the scope of the bounding box,
 // update the bounding box
-// bbox b is the bestSoFar, starts off with the seed value
-// and then progresses to expand further to include more points
+// @param fillRegion the region so far determined to be inside the feature
 // @param vertexBounds each vertex of the field line has its own bounding box
 void updateBoundingBox(vector<Point> &fillRegion, Point p, vector<Rect> &vertexBounds) {
     if(p.x < fillRegion[0].x && vertexBounds[0].contains(p)) {
@@ -199,8 +204,7 @@ bool inRange(double x, double min, double max) {
     return (x > min && x < max ? true : false);
 }
 
-void help()
-{
+void help() {
     cout << "\nThis program demonstrates line finding with the Hough transform.\n"
         "Usage:\n"
         "./houghlines <image_name>" << endl;
