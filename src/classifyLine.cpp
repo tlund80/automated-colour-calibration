@@ -2,6 +2,7 @@
 #include "opencv2/imgproc/imgproc.hpp"
 #include <iostream>
 #include <math.h>
+#include "Feature.hpp"
 
 using namespace cv;
 using namespace std;
@@ -13,23 +14,6 @@ using namespace std;
 // [2] = botRight
 // [3] = botLeft
 
-class Feature {
-public: 
-    vector<Point> region;
-    vector<Rect> vertexBounds;
-    int minAbsAngle;
-    int maxAbsAngle;
-
-    Feature(vector<Point> &region, vector<Rect> &vertexBounds, int minAbsAngle, int maxAbsAngle);
-};
-
-Feature::Feature(vector<Point> &region, vector<Rect> &vertexBounds, int minAbsAngle, int maxAbsAngle) {
-    this->region = region;
-    this->vertexBounds = vertexBounds;
-    this->minAbsAngle = minAbsAngle;
-    this->maxAbsAngle = maxAbsAngle;
-
-}
 
 void overlayTemplate(Mat &src, Mat &output, vector<Feature> features);
 void highLightFeatures(Mat &img, vector<Feature> &features);
