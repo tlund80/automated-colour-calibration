@@ -3,6 +3,7 @@
 #include <iostream>
 #include <math.h>
 #include "Feature.hpp"
+#include "classifyLine.hpp"
 
 using namespace cv;
 using namespace std;
@@ -15,14 +16,6 @@ using namespace std;
 // [3] = botLeft
 
 
-void overlayTemplate(Mat &src, Mat &output, vector<Feature> features);
-void highLightFeatures(Mat &img, vector<Feature> &features);
-void fillFeatures(Mat &img, vector<Feature> &features);
-void expandBoundingArea(vector<Vec4i> &lines, vector<Feature> &features);
-void updateBoundingBox(vector<Point> &fillRegion, Point p, vector<Rect> &vertexBounds);
-bool inRange(double x, double min, double max);
-double radToDeg(double thetaInRad);
-void help();
 
 // Top left corner of image is (0,0)
 int main(int argc, char** argv) {
