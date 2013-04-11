@@ -37,32 +37,10 @@ int main(int argc, char** argv) {
     cvtColor(outputEdgeMap, outputEdgeMap_3ch, CV_GRAY2BGR);
     vector<Vec4i> lines;
     HoughLinesP(outputEdgeMap, lines, 1, CV_PI/180, 50, 50, 80);
-
-    // Seed initial bestSoFar to be away from the target area
-    vector<Point> hLineRegion;
-    hLineRegion.push_back(Point(320,240));
-    hLineRegion.push_back(Point(320,240));
-    hLineRegion.push_back(Point(320,240));
-    hLineRegion.push_back(Point(320,240));
-
-    // bounding box for each vertex of the lineRegion
-    vector<Rect> hVertexBounds;
-    hVertexBounds.push_back(Rect(Point(0,80),Point(320,115)));
-    hVertexBounds.push_back(Rect(Point(320,120),Point(640,140)));
-    hVertexBounds.push_back(Rect(Point(320,140),Point(640,160)));
-    hVertexBounds.push_back(Rect(Point(0,115),Point(320,135)));
-
-    vector<Point> vLineRegion;
-    vLineRegion.push_back(Point(415,240));
-    vLineRegion.push_back(Point(415,240));
-    vLineRegion.push_back(Point(415,240));
-    vLineRegion.push_back(Point(415,240));
-
-    vector<Rect> vVertexBounds;
-    vVertexBounds.push_back(Rect(Point(380,110),Point(415,240)));
-    vVertexBounds.push_back(Rect(Point(415,110),Point(440,240)));
-    vVertexBounds.push_back(Rect(Point(415,240),Point(475,480)));
-    vVertexBounds.push_back(Rect(Point(360,240),Point(415,480)));
+    
+    vector<Point> hLineRegion, vLineRegion;
+    vector<Rect> hVertexBounds, vVertexBounds;
+    initTFieldLines(hLineRegion,hVertexBounds,vLineRegion,vVertexBounds);
 
     vector<Feature> features;
     features.push_back(Feature(hLineRegion,hVertexBounds,0,20));
@@ -90,6 +68,55 @@ int main(int argc, char** argv) {
     waitKey();
 
     return 0;
+}
+
+// Debug function, initialises the required templates for two particular images
+void initTFieldLines (vector<Point> &hLineRegion, vector<Rect> &hVertexBounds, vector<Point> &vLineRegion, vector<Rect> &vVertexBounds) {
+#if 1 // 001.png
+    // Seed initial bestSoFar to be away from the target area
+    hLineRegion.push_back(Point(320,240));
+    hLineRegion.push_back(Point(320,240));
+    hLineRegion.push_back(Point(320,240));
+    hLineRegion.push_back(Point(320,240));
+
+    // bounding box for each vertex of the lineRegion
+    hVertexBounds.push_back(Rect(Point(0,25),Point(320,40)));
+    hVertexBounds.push_back(Rect(Point(320,20),Point(640,40)));
+    hVertexBounds.push_back(Rect(Point(320,40),Point(640,60)));
+    hVertexBounds.push_back(Rect(Point(0,40),Point(320,60)));
+
+    vLineRegion.push_back(Point(290,240));
+    vLineRegion.push_back(Point(290,240));
+    vLineRegion.push_back(Point(290,240));
+    vLineRegion.push_back(Point(290,240));
+
+    vVertexBounds.push_back(Rect(Point(250,20),Point(290,50)));
+    vVertexBounds.push_back(Rect(Point(290,20),Point(310,50)));
+    vVertexBounds.push_back(Rect(Point(290,240),Point(370,480)));
+    vVertexBounds.push_back(Rect(Point(260,240),Point(290,480)));
+#else // 006.png
+    // Seed initial bestSoFar to be away from the target area
+    hLineRegion.push_back(Point(320,240));
+    hLineRegion.push_back(Point(320,240));
+    hLineRegion.push_back(Point(320,240));
+    hLineRegion.push_back(Point(320,240));
+
+    // bounding box for each vertex of the lineRegion
+    hVertexBounds.push_back(Rect(Point(0,80),Point(320,115)));
+    hVertexBounds.push_back(Rect(Point(320,120),Point(640,140)));
+    hVertexBounds.push_back(Rect(Point(320,140),Point(640,160)));
+    hVertexBounds.push_back(Rect(Point(0,115),Point(320,135)));
+
+    vLineRegion.push_back(Point(415,240));
+    vLineRegion.push_back(Point(415,240));
+    vLineRegion.push_back(Point(415,240));
+    vLineRegion.push_back(Point(415,240));
+
+    vVertexBounds.push_back(Rect(Point(380,110),Point(415,240)));
+    vVertexBounds.push_back(Rect(Point(415,110),Point(440,240)));
+    vVertexBounds.push_back(Rect(Point(415,240),Point(475,480)));
+    vVertexBounds.push_back(Rect(Point(360,240),Point(415,480)));
+#endif
 }
 
 void overlayTemplate(Mat &src, Mat &output, vector<Feature> features) {
