@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
 
     vector<Feature> features;
     features.push_back(Feature(hLineRegion,hVertexBounds,0,20));
-    features.push_back(Feature(vLineRegion,vVertexBounds,70,90));
+    features.push_back(Feature(vLineRegion,vVertexBounds,90,20));
 
     Mat blended;
     overlayTemplate(colourSrc,blended,features); 
@@ -160,15 +160,17 @@ void expandBoundingArea(vector<Vec4i> &lines, vector<Feature> &features) {
         // Hence -90 < radToDeg(theta) < 90
         // Hence 0 <= absThetaInDeg <= 90
         double thetaInRad = (l[2] == l[0]) ? M_PI/2 : atan((double)(l[3]-l[1])/(l[2]-l[0]));
-        double absThetaInDeg = abs(radToDeg(thetaInRad));
-        cout << "absThetaInDeg = " << absThetaInDeg << endl;
+        double thetaInDeg = radToDeg(thetaInRad);
 
         for(size_t k = 0; k < features.size(); ++k) {
-            if(inRange(absThetaInDeg,features[k].minAbsAngle,features[k].maxAbsAngle)) {
+            Feature f = features[k];
+            double min = f.angle - f.tolerance;
+            double max = f.angle + f.tolerance;
+            // If the calculated angle is within the calculated range
+            // If not try swapping to the opposite quadrant (since lines extend in both directions)
+            if(inRange(thetaInDeg,min,max) || inRange(thetaInDeg + 180,min,max) || inRange(thetaInDeg - 180,min,max)) {
                 for(int i = 0; i < 2; ++i) {
-                    cout << "Before: " << features[k].region << endl;
                     updateBoundingBox(features[k].region,pts[i],features[k].vertexBounds);
-                    cout << "After: " << features[k].region << endl;
                 }
             }
         }

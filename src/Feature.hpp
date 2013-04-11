@@ -4,15 +4,15 @@ class Feature {
 public: 
     std::vector<cv::Point> region;
     std::vector<cv::Rect> vertexBounds;
-    int minAbsAngle;
-    int maxAbsAngle;
+    double angle; // -90 < angle <= 90
+    double tolerance; // 0 <= tolerance <= 90
 
-    Feature(std::vector<cv::Point> &region, std::vector<cv::Rect> &vertexBounds, int minAbsAngle, int maxAbsAngle);
+    Feature(std::vector<cv::Point> &region, std::vector<cv::Rect> &vertexBounds, double angle, double tolerance);
 };
 
-Feature::Feature(std::vector<cv::Point> &region, std::vector<cv::Rect> &vertexBounds, int minAbsAngle, int maxAbsAngle) {
+Feature::Feature(std::vector<cv::Point> &region, std::vector<cv::Rect> &vertexBounds, double angle, double tolerance) {
     this->region = region;
     this->vertexBounds = vertexBounds;
-    this->minAbsAngle = minAbsAngle;
-    this->maxAbsAngle = maxAbsAngle;
+    this->angle = angle;
+    this->tolerance = tolerance;
 }
