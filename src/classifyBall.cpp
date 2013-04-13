@@ -66,8 +66,8 @@ int main(int argc, char** argv)
         Canny(bwImage,edgeMap, 150,200,3);
 
         /// Reduce the noise so we avoid false circle detection
-        //GaussianBlur( edgeMap, edgeMap, Size(7, 7), 2, 2 );
-
+        GaussianBlur( edgeMap, edgeMap, Size(7, 7), 2, 2 );
+#if 1
         vector<Vec3f> circles;
 
         /// Apply the Hough Transform to find the circles
@@ -83,7 +83,7 @@ int main(int argc, char** argv)
             // circle outline
             circle( src, center, radius, Scalar(255,0,0), 3, 8, 0 );
         }
-
+#endif
         imshow("src with detected Hough Circles",src);
         imshow("bwImage",bwImage);
         imshow("edgeMap", edgeMap);
