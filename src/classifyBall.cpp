@@ -8,11 +8,11 @@ using namespace std;
 /** @function main */
 int main(int argc, char** argv)
 {
-    Mat srcOrig, src_grayOrig;
+    Mat srcOrig;
 
     /// Read the image
     srcOrig = imread( argv[1], 1 );
-    src_grayOrig = imread(argv[1], 0);
+    //src_grayOrig = imread(argv[1], 0);
 
     if( !srcOrig.data )
     { return -1; }
@@ -37,9 +37,6 @@ int main(int argc, char** argv)
         alpha = (double)alphaLevel/255 * 2.0 + 1.0;
         beta = (double)betaLevel/255 * 100;
         Mat src = srcOrig.clone();
-        Mat src_gray = src.clone();
-        cvtColor(src_gray,src_gray,CV_BGR2GRAY);
-        //  cvtColor(edgeMap,src_gray,CV_GRAY2BGR);
 
         Mat saturated = Mat::zeros( src.size(), src.type() );
         /// Do the operation saturated(i,j) = alpha*image(i,j) + beta
@@ -54,7 +51,6 @@ int main(int argc, char** argv)
 
         }
         Mat edgeMap;
-        //cvtColor(src,src,CV_BGR2GRAY);
         Canny(saturated,edgeMap, 150,200,3);
 
         /// Convert it to gray
