@@ -17,8 +17,13 @@ int main(int argc, char** argv) {
     // Specify the bounding box of the feature to extract
 
     // define bounding rectangle 
-    cv::Rect rectangle(420,150,100,100);
-
+    // Ball 005.png
+    //cv::Rect rectangle(420,150,100,100);
+    // Fieldline 005.png
+    //cv::Rect rectangle(250,100,150,380);
+    
+    // Goalpost 016.png
+    cv::Rect rectangle(125,80,50,240);
     cv::Mat result; // segmentation result (4 possible values)
     cv::Mat bgModel,fgModel; // the models (internally used)
 
@@ -29,7 +34,7 @@ int main(int argc, char** argv) {
             bgModel,fgModel, // models
             1,        // number of iterations
             cv::GC_INIT_WITH_RECT); // use rectangle
-    cout << "oks pa dito" <<endl;
+
     // Get the pixels marked as likely foreground
     cv::compare(result,cv::GC_PR_FGD,result,cv::CMP_EQ);
     // Generate output image
