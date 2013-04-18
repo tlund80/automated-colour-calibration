@@ -2,6 +2,9 @@ CC_FLAGS := -Wall -Werror
 OPENCV_LIBS := `pkg-config opencv --cflags --libs`
 DEBUG := -g
  
+grabCut: grabCut.cpp
+	g++ $(DEBUG) $(CC_FLAGS) -o ../build/$@ $< $(OPENCV_LIBS)
+	
 thresholding: thresholding.cpp
 	g++ $(DEBUG) $(CC_FLAGS) -o ../build/$@ $< $(OPENCV_LIBS)
 
