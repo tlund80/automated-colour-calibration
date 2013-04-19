@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
     //cv::Rect rectangle(125,80,50,240);
     
     std::vector<cv::Rect> features;
-#if 1
+#if 0
     // 005.png T fieldline + Ball
 
     // Ball 005.png
@@ -40,9 +40,12 @@ int main(int argc, char** argv) {
 #else 
     // 030.png Goalpost + Ball
 
-    features.push_back(goalpost_1);
-    features.push_back(goalpost_2);
-    features.push_back(goalpost_3);
+    cv::Rect goalpost_left(110,40,50,240);
+    cv::Rect goalpost_top(110,65,400,30);
+    cv::Rect goalpost_right(460,50,50,240);
+    features.push_back(goalpost_left);
+    features.push_back(goalpost_top);
+    features.push_back(goalpost_right);
 
 #endif
 
