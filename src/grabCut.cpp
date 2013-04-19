@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
     // and build up the segmented foreground
     cv::Mat result; // segmentation result (4 possible values)
     cv::Mat bgModel,fgModel; // the models (internally used)
-    cv::Mat foreground(image.size(),CV_8UC3,cv::Scalar(255,255,255));
+    cv::Mat foreground(image.size(),CV_8UC3,cv::Scalar(0,0,0));
     for(size_t i = 0; i < features.size(); ++i) {
         cv::Rect rectangle = features[i];
         // GrabCut segmentation
