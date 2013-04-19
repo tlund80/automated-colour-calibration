@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
         image.copyTo(foreground,result); // bg pixels not copied
 
         // draw rectangle on original image
-        cv::rectangle(image, rectangle, cv::Scalar(255,255,255),1);
+        cv::rectangle(image, rectangle, cv::Scalar(255,0,0),1);
     }
     cv::namedWindow("Image", CV_WINDOW_NORMAL);
     cv::imshow("Image",image);
