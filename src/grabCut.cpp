@@ -14,17 +14,6 @@ int main(int argc, char** argv) {
     const char* filename = argv[1];
     Mat image = imread(filename, 1);
 
-    // Specify the bounding box of the feature to extract
-
-    // define bounding rectangle 
-    // Need at foreground mask for this one
-    //Ball ball_dot_top.png
-    //cv::Rect rectangle(240,420,50,50);
-
-    
-    // Goalpost 016.png
-    //cv::Rect rectangle(125,80,50,240);
-    
     std::vector<cv::Rect> features;
 #if 0
     // 005.png T fieldline + Ball
