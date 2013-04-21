@@ -14,8 +14,9 @@ int main(int argc, char** argv) {
     const char* filename = argv[1];
     Mat image = imread(filename, 1);
 
-    std::vector<cv::Rect> features;
-#if 0
+    std::vector<cv::Rect> features; // list of bounding boxes
+    std::vector<cv::Mat> featuresExtracted; // list of extracted foreground images, bg is black 
+#if 2
     // 005.png T fieldline + Ball
 
     // Ball 005.png
@@ -43,8 +44,8 @@ int main(int argc, char** argv) {
     // and build up the segmented foreground
     cv::Mat result; // segmentation result (4 possible values)
     cv::Mat bgModel,fgModel; // the models (internally used)
-    cv::Mat foreground(image.size(),CV_8UC3,cv::Scalar(0,0,0));
     for(size_t i = 0; i < features.size(); ++i) {
+        cv::Mat foreground(image.size(),CV_8UC3,cv::Scalar(0,0,0));
         cv::Rect rectangle = features[i];
         // GrabCut segmentation
         cv::grabCut(image,    // input image
@@ -59,15 +60,21 @@ int main(int argc, char** argv) {
         // Generate output image
         image.copyTo(foreground,result); // bg pixels not copied
 
+        featuresExtracted.push_back(foreground.clone());
         // draw rectangle on original image
         cv::rectangle(image, rectangle, cv::Scalar(255,0,0),1);
     }
+
+    // display result
     cv::namedWindow("Image", CV_WINDOW_NORMAL);
     cv::imshow("Image",image);
 
-    // display result
-    cv::namedWindow("Segmented Image", CV_WINDOW_NORMAL);
-    cv::imshow("Segmented Image",foreground);
+    for(size_t i = 0; i< featuresExtracted.size();++i) {
+        std::ostringstream stream;
+        stream << "Segmented Image (" << i << ")";
+        cv::namedWindow(stream.str(), CV_WINDOW_NORMAL);
+        cv::imshow(stream.str(),featuresExtracted[i]);
+    }
 
     waitKey();
 
