@@ -15,6 +15,7 @@ int main(int argc, char** argv) {
     const char* filename = argv[1];
     Mat image = imread(filename, 1);
 
+    std::vector<int> featureColours; // list of colours for each feature
     std::vector<cv::Rect> features; // list of bounding boxes
     std::vector<cv::Mat> featuresExtracted; // list of extracted foreground images, bg is black 
 #if 0
@@ -22,12 +23,13 @@ int main(int argc, char** argv) {
 
     // Ball 005.png
     cv::Rect ball(420,150,100,100);
-    
     // Fieldline 005.png
     cv::Rect fieldLine(250,100,150,380);
 
     features.push_back(ball);
     features.push_back(fieldLine);
+    featureColours.push_back(cBALL);
+    featureColours.push_back(cWHITE);
 #else 
     // 030.png Goalpost + Ball
 
@@ -37,6 +39,9 @@ int main(int argc, char** argv) {
     features.push_back(goalpost_left);
     features.push_back(goalpost_top);
     features.push_back(goalpost_right);
+    featureColours.push_back(cGOAL_YELLOW);
+    featureColours.push_back(cGOAL_YELLOW);
+    featureColours.push_back(cGOAL_YELLOW);
 
 #endif
 
@@ -69,12 +74,30 @@ int main(int argc, char** argv) {
 
     //////////////////////////////////////////////////
 
-    // Iterate through each image matrix
-    // Note what feature it is
-    cout << "cBALL=" << cBALL << endl;
-    cout << "cUNCLASSIFIED=" << cUNCLASSIFIED << endl;
-    // For non-black pixels, update the point cloud
+    Classifier cl();
+    cl.newClassificationFile(); // initiliasing the weight table
+
+    for(size_t i = 0; i < featuresExtracted.size(); ++i) {
+        cv::Mat fg_image = featuresExtracted[i].fg_image;
+        // Iterate through the image matrix, featuresExtracted[i].fg_image
+        for(size_t y = 0; y < fg_image.rows; ++y) {
+            for(size_t x = 0; x < fg_image.cols; ++x) {
+                Vec3b pixel_rgb = fg_image.at<Vec3b>(y,x);
+                // if not black (i.e. foreground)
+                // Add candidate points to the point cloud
+                if(!(pixel_rgb[0] == 0 && pixel_rgb[1] == 0 && pixel_rgb[2] == 0)) {
+                    //point_cloud.push_back(pixel);
+                    PixelValues p = rgb2yuv(pixel_rgb);
+                    cl.classify(p.y, p.u, p.v, 1, 
+                            static_cast<Colour>(featuresExtracted[i].feature_type, 0, 0, 0, false);
+                }
+            }
+        }
+    }
+
     // Save the point cloud as an nnmc file
+    cl.saveNnmc("output.nnmc");
+
     ////////////////////////////////////////////////
     // display result
     cv::namedWindow("Image", CV_WINDOW_NORMAL);
