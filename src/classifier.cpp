@@ -404,7 +404,7 @@ void Classifier::setUpdateLiveNnmc(bool useLive) {
       liveNnmc = NULL;
    }
 }
-
+#if 0
 /* Converts a YUV pixel spec to RGB */
 QRgb Classifier::yuv2rgb(int y, int u, int v) {
    y -= 16;
@@ -421,3 +421,4 @@ QRgb Classifier::yuv2rgb(int y, int u, int v) {
    if (b > 255) b = 255;
    return qRgb(r, g, b);
 }
+#endif

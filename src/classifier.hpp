@@ -33,14 +33,17 @@ Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 #include <stdio.h>
 #include <stdint.h>
+#if 0
 #include <QRgb>
+#endif
 #include <fstream>
 #include <deque>
 #include <iostream>
 #include <vector>
 #include <string>
+#if 0
 #include "../../robot/perception/vision/VisionDefs.hpp"
-
+#endif
 static const int YMAX = 128;
 static const int UMAX = 128;
 static const int VMAX = 128;
@@ -115,10 +118,10 @@ struct Action {
 // This class lets you make a classification file
 class Classifier {
    public:
-
+#if 0
       /* Converts a YUV pixel spec to RGB */
       static QRgb yuv2rgb(int y, int u, int v);
-
+#endif
       Classifier(void);
       ~Classifier(void);
 

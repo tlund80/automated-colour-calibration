@@ -1,6 +1,7 @@
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "VisionDefs.hpp" // runswift code
+#include "classifier.hpp" // runswift code
 #include <iostream>
 
 using namespace cv;
@@ -8,7 +9,11 @@ using namespace std;
 
 // no transformation for the meantime
 PixelValues rgb2yuv(cv::Vec3b rgbPixel) {
-    return {rgbPixel[0],rgbPixel[1],rgbPixel[2]};
+    PixelValues p;
+    p.y = rgbPixel[0];
+    p.u = rgbPixel[1];
+    p.v = rgbPixel[2];
+    return p;
 }
 
 // Top left corner of image is (0,0)
@@ -78,29 +83,29 @@ int main(int argc, char** argv) {
 
     //////////////////////////////////////////////////
 
-    Classifier cl();
-    cl.newClassificationFile(); // initiliasing the weight table
+    Classifier *cl = new Classifier();
+    cl->newClassificationFile(); // initiliasing the weight table
 
     for(size_t i = 0; i < featuresExtracted.size(); ++i) {
         cv::Mat fg_image = featuresExtracted[i];
         // Iterate through the image matrix, featuresExtracted[i].fg_image
-        for(size_t y = 0; y < fg_image.rows; ++y) {
-            for(size_t x = 0; x < fg_image.cols; ++x) {
+        for(int y = 0; y < fg_image.rows; ++y) {
+            for(int x = 0; x < fg_image.cols; ++x) {
                 Vec3b pixel_rgb = fg_image.at<Vec3b>(y,x);
                 // if not black (i.e. foreground)
                 // Add candidate points to the point cloud
                 if(!(pixel_rgb[0] == 0 && pixel_rgb[1] == 0 && pixel_rgb[2] == 0)) {
                     //point_cloud.push_back(pixel);
                     PixelValues p = rgb2yuv(pixel_rgb);
-                    cl.classify(p.y, p.u, p.v, 1, 
-                            static_cast<Colour>(featureColours[i], 0, 0, 0, false);
+                    cl->classify(p.y, p.u, p.v, 1, 
+                            static_cast<Colour>(featureColours[i]), 0, 0, 0, false);
                 }
             }
         }
     }
 
     // Save the point cloud as an nnmc file
-    cl.saveNnmc("output.nnmc");
+    cl->saveNnmc("output.nnmc");
 
     ////////////////////////////////////////////////
     // display result
