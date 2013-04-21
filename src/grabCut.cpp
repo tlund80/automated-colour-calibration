@@ -16,7 +16,7 @@ int main(int argc, char** argv) {
 
     std::vector<cv::Rect> features; // list of bounding boxes
     std::vector<cv::Mat> featuresExtracted; // list of extracted foreground images, bg is black 
-#if 2
+#if 0
     // 005.png T fieldline + Ball
 
     // Ball 005.png
@@ -39,12 +39,13 @@ int main(int argc, char** argv) {
 
 #endif
 
-    // go through each bounding box
-    // extract the feature
-    // and build up the segmented foreground
-    cv::Mat result; // segmentation result (4 possible values)
-    cv::Mat bgModel,fgModel; // the models (internally used)
+    cv::Mat imageCopy = image.clone();
     for(size_t i = 0; i < features.size(); ++i) {
+        // go through each bounding box
+        // extract the feature
+        // and build up the segmented foreground
+        cv::Mat result; // segmentation result (4 possible values)
+        cv::Mat bgModel,fgModel; // the models (internally used)
         cv::Mat foreground(image.size(),CV_8UC3,cv::Scalar(0,0,0));
         cv::Rect rectangle = features[i];
         // GrabCut segmentation
@@ -61,13 +62,20 @@ int main(int argc, char** argv) {
         image.copyTo(foreground,result); // bg pixels not copied
 
         featuresExtracted.push_back(foreground.clone());
-        // draw rectangle on original image
-        cv::rectangle(image, rectangle, cv::Scalar(255,0,0),1);
+        // draw rectangle on original image's copy
+        cv::rectangle(imageCopy, rectangle, cv::Scalar(255,0,0),1);
     }
 
+    //////////////////////////////////////////////////
+
+    // Iterate through each image matrix
+    // Note what feature it is
+    // For non-black pixels, update the point cloud
+    // Save the point cloud as an nnmc file
+    ////////////////////////////////////////////////
     // display result
     cv::namedWindow("Image", CV_WINDOW_NORMAL);
-    cv::imshow("Image",image);
+    cv::imshow("Image",imageCopy);
 
     for(size_t i = 0; i< featuresExtracted.size();++i) {
         std::ostringstream stream;
