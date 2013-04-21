@@ -6,6 +6,10 @@
 using namespace cv;
 using namespace std;
 
+// no transformation for the meantime
+PixelValues rgb2yuv(cv::Vec3b rgbPixel) {
+    return {rgbPixel[0],rgbPixel[1],rgbPixel[2]};
+}
 
 // Top left corner of image is (0,0)
 int main(int argc, char** argv) {
@@ -78,7 +82,7 @@ int main(int argc, char** argv) {
     cl.newClassificationFile(); // initiliasing the weight table
 
     for(size_t i = 0; i < featuresExtracted.size(); ++i) {
-        cv::Mat fg_image = featuresExtracted[i].fg_image;
+        cv::Mat fg_image = featuresExtracted[i];
         // Iterate through the image matrix, featuresExtracted[i].fg_image
         for(size_t y = 0; y < fg_image.rows; ++y) {
             for(size_t x = 0; x < fg_image.cols; ++x) {
@@ -89,7 +93,7 @@ int main(int argc, char** argv) {
                     //point_cloud.push_back(pixel);
                     PixelValues p = rgb2yuv(pixel_rgb);
                     cl.classify(p.y, p.u, p.v, 1, 
-                            static_cast<Colour>(featuresExtracted[i].feature_type, 0, 0, 0, false);
+                            static_cast<Colour>(featureColours[i], 0, 0, 0, false);
                 }
             }
         }
