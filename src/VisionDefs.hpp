@@ -32,10 +32,10 @@ Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #pragma once
 
 #include <stdint.h>
+#if 0
 #include "utils/angles.hpp"
-
 #include "types/PostInfo.hpp"
-
+#endif
 #define TOP_IMAGE_ROWS 480
 #define TOP_IMAGE_COLS 640
 #define BOT_IMAGE_ROWS 480
@@ -127,7 +127,7 @@ enum feature_type
    fFIELD_EDGE,
    fNUM_FEATURES
 };
-
+#if 0
 /**
  * LEGACY CODE - DO NOT USE
  * Which posts are seen by vision
@@ -312,7 +312,7 @@ struct low_feature
    low_feature ()
       : type (f_none), orientation (d_none) {}
 };
-
+#endif
 /* Components of a pixel */
 typedef enum {
    ycomponent,

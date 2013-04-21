@@ -1,5 +1,6 @@
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
+#include "VisionDefs.hpp" // runswift code
 #include <iostream>
 
 using namespace cv;
@@ -70,6 +71,8 @@ int main(int argc, char** argv) {
 
     // Iterate through each image matrix
     // Note what feature it is
+    cout << "cBALL=" << cBALL << endl;
+    cout << "cUNCLASSIFIED=" << cUNCLASSIFIED << endl;
     // For non-black pixels, update the point cloud
     // Save the point cloud as an nnmc file
     ////////////////////////////////////////////////
