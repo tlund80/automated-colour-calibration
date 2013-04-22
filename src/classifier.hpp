@@ -157,8 +157,9 @@ class Classifier {
       unsigned char* getNnmcPointer(void);
       void setNnmcPointer(unsigned char* nnmc);
       void setUpdateLiveNnmc(bool);
-
+#if 0
    private:
+#endif
       void applyAction(Action &a, bool undo);
       void applyGaussian(YuvGaussian&, bool undo);
       void addWeight(YuvTriple yuv, float amount, Colour c, bool undo);

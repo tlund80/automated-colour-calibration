@@ -7,6 +7,15 @@
 using namespace cv;
 using namespace std;
 
+/* A handy helper function */
+void inRange(int &n, int min, int max) {
+   if (n < min) {
+      n = min;
+   }
+   if (n > max) {
+      n = max;
+   }
+}
 // Note the input pixel vector is in BGR order
 PixelValues rgb2yuv(cv::Vec3b i) {
     int b = 0;
@@ -101,10 +110,37 @@ int main(int argc, char** argv) {
                 // if not black (i.e. foreground)
                 // Add candidate points to the point cloud
                 if(!(pixel_rgb[0] == 0 && pixel_rgb[1] == 0 && pixel_rgb[2] == 0)) {
-                    //point_cloud.push_back(pixel);
+                    cout << pixel_rgb << endl;
                     PixelValues p = rgb2yuv(pixel_rgb);
-                    cl->classify(p.y, p.u, p.v, 1, 
-                            static_cast<Colour>(featureColours[i]), 0, 0, 0, false);
+                    
+                    // from calibrationTab.cpp
+                    // update radii
+                    float weight = 1;
+                    int yRadius = 10, uRadius = 20, vRadius = 20;
+                    bool autoWeight = false;
+                    if (autoWeight) {
+                        float weights[CMAX];
+                        cl->colourInfo(p.y, p.u, p.v, weights);
+                        float totalWeight = 0.0;
+                        for (int i = 0; i < CMAX; i++) {
+                            totalWeight += weights[i];
+                        }
+                        yRadius = static_cast<int>(10.0 / (1.0 + totalWeight));
+                        uRadius = static_cast<int>(20.0 / (1.0 + totalWeight));
+                        vRadius = static_cast<int>(20.0 / (1.0 + totalWeight));
+                        inRange(yRadius, 1, 10);
+                        inRange(uRadius, 1, 20);
+                        inRange(vRadius, 1, 20);
+                        weight = 1.0 + (totalWeight / 10.0);
+                    }
+
+                    // classify!
+                    Colour colour = static_cast<Colour>(featureColours[i]);
+                    if (!cl->isMostlyClassified(p.y, p.u, p.v, colour)) {
+                        cl->classify(p.y, p.u, p.v, weight, colour, yRadius,
+                                uRadius, vRadius, false);
+                    }
+                    // end from calibration.cpp
                 }
             }
         }
