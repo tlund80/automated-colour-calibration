@@ -107,7 +107,6 @@ int main(int argc, char** argv) {
     // Save the point cloud as an nnmc file
     cl->saveNnmc("../build/output.nnmc");
 
-    ////////////////////////////////////////////////
     // display result
     cv::namedWindow("Image", CV_WINDOW_NORMAL);
     cv::imshow("Image",imageCopy);
