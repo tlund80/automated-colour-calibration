@@ -213,14 +213,16 @@ void Classifier::colourInfo(int y, int u, int v, float weights[CMAX]) {
 
 void Classifier::addWeight(YuvTriple yuv, float amount, Colour c, bool undo) {
    Weights weights;
+#if 0
    float oldWeight;
-
+#endif
    if (yuv.y < YMAX and yuv.u < UMAX and yuv.v < VMAX) {
       // Read the old values
       getWeights(yuv, weights);
-
+#if 0
       // Find new value
       oldWeight = weights.w[c];
+#endif
       if (undo) {
          weights.w[c] -= amount;
       } else {

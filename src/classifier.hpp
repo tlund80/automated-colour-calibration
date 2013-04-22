@@ -43,6 +43,8 @@ Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #include <string>
 #if 0
 #include "../../robot/perception/vision/VisionDefs.hpp"
+#else
+#include "VisionDefs.hpp"
 #endif
 static const int YMAX = 128;
 static const int UMAX = 128;
