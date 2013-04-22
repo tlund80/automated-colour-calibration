@@ -137,8 +137,10 @@ int main(int argc, char** argv) {
                     // classify!
                     Colour colour = static_cast<Colour>(featureColours[i]);
                     if (!cl->isMostlyClassified(p.y, p.u, p.v, colour)) {
+                        cl->beginAction();
                         cl->classify(p.y, p.u, p.v, weight, colour, yRadius,
                                 uRadius, vRadius, false);
+                        cl->endAction();
                     }
                     // end from calibration.cpp
                 }
