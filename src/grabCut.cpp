@@ -33,17 +33,17 @@ PixelValues rgb2yuv(cv::Vec3b i) {
 
 // Top left corner of image is (0,0)
 int main(int argc, char** argv) {
-    if(argc < 2) {
-        exit(1);
-    }
-    const char* filename = argv[1];
-    Mat image = imread(filename, 1);
-
+    std::vector<cv::Mat> origImages; // list of images, same images are not copied, they merely reference to the same block of memory
+    std::vector<cv::Mat> boxedImages; // list of images with the bounding box overlayed
     std::vector<int> featureColours; // list of colours for each feature
     std::vector<cv::Rect> features; // list of bounding boxes
     std::vector<cv::Mat> featuresExtracted; // list of extracted foreground images, bg is black 
-#if 1
-    // 005.png T fieldline + Ball
+
+    cv::Mat ballAndFieldLine = imread("../images/005.png",1);
+    
+    for(int i = 0; i < 2; ++i) {
+        origImages.push_back(ballAndFieldLine);
+    }
 
     // Ball 005.png
     cv::Rect ball(420,150,100,100);
@@ -54,9 +54,12 @@ int main(int argc, char** argv) {
     features.push_back(fieldLine);
     featureColours.push_back(cBALL);
     featureColours.push_back(cWHITE);
-#else 
-    // 030.png Goalpost + Ball
 
+    // 030.png Goalpost + Ball
+    cv::Mat goalpost = imread("../images/030.png",1);
+    for(int i = 0; i < 3; ++i) {
+        origImages.push_back(goalpost);
+    }
     cv::Rect goalpost_left(110,40,50,240);
     cv::Rect goalpost_top(110,65,400,30);
     cv::Rect goalpost_right(460,50,50,240);
@@ -67,19 +70,16 @@ int main(int argc, char** argv) {
     featureColours.push_back(cGOAL_YELLOW);
     featureColours.push_back(cGOAL_YELLOW);
 
-#endif
-
-    cv::Mat imageCopy = image.clone();
     for(size_t i = 0; i < features.size(); ++i) {
         // go through each bounding box
         // extract the feature
         // and build up the segmented foreground
         cv::Mat result; // segmentation result (4 possible values)
         cv::Mat bgModel,fgModel; // the models (internally used)
-        cv::Mat foreground(image.size(),CV_8UC3,cv::Scalar(0,0,0));
+        cv::Mat foreground(origImages[i].size(),CV_8UC3,cv::Scalar(0,0,0));
         cv::Rect rectangle = features[i];
         // GrabCut segmentation
-        cv::grabCut(image,    // input image
+        cv::grabCut(origImages[i],    // input image
                 result,   // segmentation result
                 rectangle,// rectangle containing foreground 
                 bgModel,fgModel, // models
@@ -89,11 +89,13 @@ int main(int argc, char** argv) {
         // Get the pixels marked as likely foreground
         cv::compare(result,cv::GC_PR_FGD,result,cv::CMP_EQ);
         // Generate output image
-        image.copyTo(foreground,result); // bg pixels not copied
+        origImages[i].copyTo(foreground,result); // bg pixels not copied
 
         featuresExtracted.push_back(foreground.clone());
         // draw rectangle on original image's copy
-        cv::rectangle(imageCopy, rectangle, cv::Scalar(255,0,0),1);
+        cv::Mat overlayedImage = origImages[i].clone();
+        cv::rectangle(overlayedImage, rectangle, cv::Scalar(255,0,0),1);
+        boxedImages.push_back(overlayedImage);
     }
 
     //////////////////////////////////////////////////
@@ -116,7 +118,8 @@ int main(int argc, char** argv) {
                     // from calibrationTab.cpp
                     // update radii
                     float weight = 1;
-                    int yRadius = 10, uRadius = 20, vRadius = 20;
+                    int yRadius = 1, uRadius = 2, vRadius = 2;
+#if 0
                     bool autoWeight = false;
                     if (autoWeight) {
                         float weights[CMAX];
@@ -133,7 +136,7 @@ int main(int argc, char** argv) {
                         inRange(vRadius, 1, 20);
                         weight = 1.0 + (totalWeight / 10.0);
                     }
-
+#endif
                     // classify!
                     Colour colour = static_cast<Colour>(featureColours[i]);
                     if (!cl->isMostlyClassified(p.y, p.u, p.v, colour)) {
@@ -152,14 +155,22 @@ int main(int argc, char** argv) {
     cl->saveNnmc("../build/output.nnmc");
 
     // display result
-    cv::namedWindow("Image", CV_WINDOW_NORMAL);
-    cv::imshow("Image",imageCopy);
+    cv::namedWindow("BallAndFieldLine", CV_WINDOW_NORMAL);
+    cv::imshow("BallAndFieldLine",ballAndFieldLine);
+
+    cv::namedWindow("Goalpost",CV_WINDOW_NORMAL);
+    cv::imshow("Goalpost",goalpost);
 
     for(size_t i = 0; i< featuresExtracted.size();++i) {
         std::ostringstream stream;
         stream << "Segmented Image (" << i << ")";
         cv::namedWindow(stream.str(), CV_WINDOW_NORMAL);
         cv::imshow(stream.str(),featuresExtracted[i]);
+
+        std::ostringstream boxed;
+        boxed << "Boxed (" << i << ")";
+        cv::namedWindow(boxed.str(), CV_WINDOW_NORMAL);
+        cv::imshow(boxed.str(),boxedImages[i]);
     }
 
     waitKey();
