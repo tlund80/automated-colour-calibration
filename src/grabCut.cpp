@@ -7,29 +7,8 @@
 using namespace cv;
 using namespace std;
 
-/* A handy helper function */
-void inRange(int &n, int min, int max) {
-   if (n < min) {
-      n = min;
-   }
-   if (n > max) {
-      n = max;
-   }
-}
-// Note the input pixel vector is in BGR order
-PixelValues rgb2yuv(cv::Vec3b i) {
-    int b = 0;
-    int g = 1;
-    int r = 2;
-    double y = 0.299*i[r] + 0.587*i[g] + 0.114*i[b];
-    double u = (i[b] - y) * 0.564 + 128;
-    double v = (i[r] - y) * 0.713 + 128;
-    PixelValues p;
-    p.y = static_cast<uint8_t>(y); 
-    p.u = static_cast<uint8_t>(u);
-    p.v = static_cast<uint8_t>(v);
-    return p;
-}
+void inRange(int &n, int min, int max);
+PixelValues rgb2yuv(cv::Vec3b i);
 
 // Top left corner of image is (0,0)
 int main(int argc, char** argv) {
@@ -39,21 +18,22 @@ int main(int argc, char** argv) {
     std::vector<cv::Rect> features; // list of bounding boxes
     std::vector<cv::Mat> featuresExtracted; // list of extracted foreground images, bg is black 
 
+    //****************** Add features ***************
     cv::Mat ballAndFieldLine = imread("../images/005.png",1);
-    
-    for(int i = 0; i < 2; ++i) {
+    for(int i = 0; i < 3; ++i) {
         origImages.push_back(ballAndFieldLine);
     }
-
     // Ball 005.png
     cv::Rect ball(420,150,100,100);
+    features.push_back(ball);
+    featureColours.push_back(cBALL);
     // Fieldline 005.png
     cv::Rect fieldLine(250,100,150,380);
-
-    features.push_back(ball);
     features.push_back(fieldLine);
-    featureColours.push_back(cBALL);
     featureColours.push_back(cWHITE);
+    cv::Rect fieldGreen(30,160,220,320);
+    features.push_back(fieldGreen);
+    featureColours.push_back(cFIELD_GREEN);
 
     // 030.png Goalpost + Ball
     cv::Mat goalpost = imread("../images/030.png",1);
@@ -61,15 +41,16 @@ int main(int argc, char** argv) {
         origImages.push_back(goalpost);
     }
     cv::Rect goalpost_left(110,40,50,240);
-    cv::Rect goalpost_top(110,65,400,30);
-    cv::Rect goalpost_right(460,50,50,240);
     features.push_back(goalpost_left);
+    featureColours.push_back(cGOAL_YELLOW);
+    cv::Rect goalpost_top(110,65,400,30);
     features.push_back(goalpost_top);
+    featureColours.push_back(cGOAL_YELLOW);
+    cv::Rect goalpost_right(460,50,50,240);
     features.push_back(goalpost_right);
     featureColours.push_back(cGOAL_YELLOW);
-    featureColours.push_back(cGOAL_YELLOW);
-    featureColours.push_back(cGOAL_YELLOW);
 
+    //************* Process all features *********************
     for(size_t i = 0; i < features.size(); ++i) {
         // go through each bounding box
         // extract the feature
@@ -176,4 +157,27 @@ int main(int argc, char** argv) {
     waitKey();
 
     return 0;
+}
+/* A handy helper function */
+void inRange(int &n, int min, int max) {
+   if (n < min) {
+      n = min;
+   }
+   if (n > max) {
+      n = max;
+   }
+}
+// Note the input pixel vector is in BGR order
+PixelValues rgb2yuv(cv::Vec3b i) {
+    int b = 0;
+    int g = 1;
+    int r = 2;
+    double y = 0.299*i[r] + 0.587*i[g] + 0.114*i[b];
+    double u = (i[b] - y) * 0.564 + 128;
+    double v = (i[r] - y) * 0.713 + 128;
+    PixelValues p;
+    p.y = static_cast<uint8_t>(y); 
+    p.u = static_cast<uint8_t>(u);
+    p.v = static_cast<uint8_t>(v);
+    return p;
 }
