@@ -26,7 +26,9 @@ int main(int argc, char** argv) {
     features.push_back(ball);
     featureColours.push_back(cBALL);
     // Robot Blue
-
+    cv::Rect robotBlue(160,260,60,30);
+    features.push_back(robotBlue);
+    featureColours.push_back(cROBOT_BLUE);
     // Robot Red
 
     // Goalpost 
