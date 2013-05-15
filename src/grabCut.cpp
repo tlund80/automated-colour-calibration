@@ -30,6 +30,9 @@ int main(int argc, char** argv) {
     features.push_back(robotBlue);
     featureColours.push_back(cROBOT_BLUE);
     // Robot Red
+    cv::Rect robotRed(330,260,60,30);
+    features.push_back(robotRed);
+    featureColours.push_back(cROBOT_RED);
 
     // Goalpost 
     cv::Rect goalpostLeft(46,32,56,268);
