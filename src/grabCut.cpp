@@ -19,6 +19,26 @@ int main(int argc, char** argv) {
     std::vector<cv::Mat> featuresExtracted; // list of extracted foreground images, bg is black 
 
     //****************** Add features ***************
+    cv::Mat oImage = imread("../images/05-15_0/01.png",1);
+
+    // Ball
+    for(int i = 0; i < 1; ++i) {
+        origImages.push_back(oImage);
+    }
+    // Robot Blue
+
+    // Robot Red
+
+    // Goalpost 
+    cv::Rect goalpostLeft(46,32,56,268);
+    features.push_back(goalpostLeft);
+    featureColours.push_back(cGOAL_YELLOW);
+    
+    // Field line
+
+    // Field Green
+    
+    /*
     cv::Mat ballAndFieldLine = imread("../images/005.png",1);
     for(int i = 0; i < 3; ++i) {
         origImages.push_back(ballAndFieldLine);
@@ -34,7 +54,8 @@ int main(int argc, char** argv) {
     cv::Rect fieldGreen(30,160,220,320);
     features.push_back(fieldGreen);
     featureColours.push_back(cFIELD_GREEN);
-
+*/
+/*
     // 030.png Goalpost + Ball
     cv::Mat goalpost = imread("../images/030.png",1);
     for(int i = 0; i < 3; ++i) {
@@ -49,7 +70,7 @@ int main(int argc, char** argv) {
     cv::Rect goalpost_right(460,50,50,240);
     features.push_back(goalpost_right);
     featureColours.push_back(cGOAL_YELLOW);
-
+*/
     //************* Process all features *********************
     for(size_t i = 0; i < features.size(); ++i) {
         // go through each bounding box
@@ -136,12 +157,15 @@ int main(int argc, char** argv) {
     cl->saveNnmc("../build/output.nnmc");
 
     // display result
+    cv::namedWindow("Original", CV_WINDOW_NORMAL);
+    cv::imshow("Original",oImage);
+    /*
     cv::namedWindow("BallAndFieldLine", CV_WINDOW_NORMAL);
     cv::imshow("BallAndFieldLine",ballAndFieldLine);
 
     cv::namedWindow("Goalpost",CV_WINDOW_NORMAL);
     cv::imshow("Goalpost",goalpost);
-
+*/
     for(size_t i = 0; i< featuresExtracted.size();++i) {
         std::ostringstream stream;
         stream << "Segmented Image (" << i << ")";
