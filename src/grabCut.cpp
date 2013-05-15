@@ -33,12 +33,11 @@ int main(int argc, char** argv) {
     cv::Rect robotRed(330,260,60,30);
     features.push_back(robotRed);
     featureColours.push_back(cROBOT_RED);
-
     // Goalpost 
     cv::Rect goalpostLeft(46,32,56,268);
     features.push_back(goalpostLeft);
     featureColours.push_back(cGOAL_YELLOW);
-   
+
     cv::Rect goalpostTop(120,50,320,40);
     features.push_back(goalpostTop);
     featureColours.push_back(cGOAL_YELLOW);
@@ -46,9 +45,16 @@ int main(int argc, char** argv) {
     cv::Rect goalpostRight(460,55,40,250);
     features.push_back(goalpostRight);
     featureColours.push_back(cGOAL_YELLOW);
+    
     // Field line
+    cv::Rect fieldLine(440,320,100,20);
+    features.push_back(fieldLine);
+    featureColours.push_back(cWHITE);
 
     // Field Green
+    cv::Rect fieldGreen(460,320,120,130);
+    features.push_back(fieldGreen);
+    featureColours.push_back(cFIELD_GREEN);
     
     // Associate each feature with its source image
     size_t numImagesToFill = features.size() - origImages.size();
@@ -137,9 +143,9 @@ int main(int argc, char** argv) {
                     // from calibrationTab.cpp
                     // update radii
                     float weight = 1;
-                    int yRadius = 10, uRadius = 20, vRadius = 20;
+                    int yRadius = 2, uRadius = 4, vRadius = 4;
 #if 0
-                    bool autoWeight = false;
+                    bool autoWeight = true;
                     if (autoWeight) {
                         float weights[CMAX];
                         cl->colourInfo(p.y, p.u, p.v, weights);
