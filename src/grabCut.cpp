@@ -22,9 +22,6 @@ int main(int argc, char** argv) {
     cv::Mat oImage = imread("../images/05-15_0/01.png",1);
 
     // Ball
-    for(int i = 0; i < 1; ++i) {
-        origImages.push_back(oImage);
-    }
     // Robot Blue
 
     // Robot Red
@@ -33,11 +30,19 @@ int main(int argc, char** argv) {
     cv::Rect goalpostLeft(46,32,56,268);
     features.push_back(goalpostLeft);
     featureColours.push_back(cGOAL_YELLOW);
-    
+   
+    cv::Rect goalpostTop(120,50,320,40);
+    features.push_back(goalpostTop);
+    featureColours.push_back(cGOAL_YELLOW);
     // Field line
 
     // Field Green
     
+    // Associate each feature with its source image
+    size_t numImagesToFill = features.size() - origImages.size();
+    for(size_t i = 0; i < numImagesToFill; ++i) {
+        origImages.push_back(oImage);
+    }
     /*
     cv::Mat ballAndFieldLine = imread("../images/005.png",1);
     for(int i = 0; i < 3; ++i) {
