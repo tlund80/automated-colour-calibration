@@ -1,0 +1,2 @@
+make grabCut
+../build/grabCut
