@@ -22,6 +22,9 @@ int main(int argc, char** argv) {
     cv::Mat oImage = imread("../images/05-15_0/01.png",1);
 
     // Ball
+    cv::Rect ball(235,370,50,50);
+    features.push_back(ball);
+    featureColours.push_back(cBALL);
     // Robot Blue
 
     // Robot Red
