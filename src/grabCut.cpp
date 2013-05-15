@@ -99,7 +99,7 @@ int main(int argc, char** argv) {
                     // from calibrationTab.cpp
                     // update radii
                     float weight = 1;
-                    int yRadius = 1, uRadius = 2, vRadius = 2;
+                    int yRadius = 10, uRadius = 20, vRadius = 20;
 #if 0
                     bool autoWeight = false;
                     if (autoWeight) {
