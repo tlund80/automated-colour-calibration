@@ -34,6 +34,10 @@ int main(int argc, char** argv) {
     cv::Rect goalpostTop(120,50,320,40);
     features.push_back(goalpostTop);
     featureColours.push_back(cGOAL_YELLOW);
+
+    cv::Rect goalpostRight(460,55,40,250);
+    features.push_back(goalpostRight);
+    featureColours.push_back(cGOAL_YELLOW);
     // Field line
 
     // Field Green
