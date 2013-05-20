@@ -2,6 +2,9 @@ CC_FLAGS := -Wall -Werror
 OPENCV_LIBS := `pkg-config opencv --cflags --libs`
 DEBUG := -g
  
+fillUnclassified: fillUnclassified.cpp
+	g++ $(DEBUG) $(CC_FLAGS) -o ../build/$@ $< $(OPENCV_LIBS)
+
 compareError: compareError.cpp
 	g++ $(DEBUG) $(CC_FLAGS) -o ../build/$@ $< $(OPENCV_LIBS)
 

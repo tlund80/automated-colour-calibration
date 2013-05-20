@@ -55,5 +55,10 @@ int main(int argc, char *argv[]) {
 // Given a pixel, return true if it is a classified SPL colour, else false
 // This functions helps to exclude those pixels marked as 'unclassified' when performing pixel comparison
 bool isClassifiedColour(cv::Vec3b pixel) {
-    return true; // stub function at the moment
+    for(int i = 0; i < cNUM_COLOURS; ++i) {
+        if(convertColourToRgb((Colour)i) == pixel) {
+            return true;
+        }
+    }
+    return false;
 }
