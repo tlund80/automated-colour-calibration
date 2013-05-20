@@ -2,6 +2,9 @@ CC_FLAGS := -Wall -Werror
 OPENCV_LIBS := `pkg-config opencv --cflags --libs`
 DEBUG := -g
  
+applyNnmc: applyNnmc.cpp
+	g++ $(DEBUG) $(CC_FLAGS) -o ../build/$@ $<
+
 grabCut: grabCut.cpp classifier.cpp VisionDefs.hpp classifier.hpp
 	g++ $(DEBUG) $(CC_FLAGS) -o ../build/$@ grabCut.cpp classifier.cpp -lbz2 $(OPENCV_LIBS)
 	
