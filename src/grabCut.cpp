@@ -1,8 +1,8 @@
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
-#include "VisionDefs.hpp" // runswift code
-#include "classifier.hpp" // runswift code
-#include "rgb2yuv.hpp"
+#include "helpers/VisionDefs.hpp" // runswift code
+#include "helpers/classifier.hpp" // runswift code
+#include "helpers/rgb2yuv.hpp"
 #include <iostream>
 
 using namespace cv;

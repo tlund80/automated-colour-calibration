@@ -7,11 +7,11 @@
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include <iostream>
-#include "NNMC.hpp"
-#include "NNMCinline.hpp"
-#include "VisionDefs.hpp"
-#include "rgb2yuv.hpp"
-#include "colour2rgb.hpp"
+#include "helpers/NNMC.hpp"
+#include "helpers/NNMCinline.hpp"
+#include "helpers/VisionDefs.hpp"
+#include "helpers/rgb2yuv.hpp"
+#include "helpers/colour2rgb.hpp"
 using namespace cv;
 using namespace std;
 

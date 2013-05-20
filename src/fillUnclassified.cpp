@@ -6,8 +6,8 @@
  */
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
-#include "VisionDefs.hpp"
-#include "colour2rgb.hpp"
+#include "helpers/VisionDefs.hpp"
+#include "helpes/colour2rgb.hpp"
 #include <iostream>
 using namespace cv;
 using namespace std;

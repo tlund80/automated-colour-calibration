@@ -8,11 +8,11 @@ fillUnclassified: fillUnclassified.cpp
 compareError: compareError.cpp
 	g++ $(DEBUG) $(CC_FLAGS) -o ../build/$@ $< $(OPENCV_LIBS)
 
-applyNnmc: applyNnmc.cpp NNMC.cpp NNMC.hpp NNMCinline.hpp
-	g++ $(DEBUG) -Wall -o ../build/$@ applyNnmc.cpp NNMC.cpp -lbz2 $(OPENCV_LIBS)
+applyNnmc: applyNnmc.cpp helpers/NNMC.cpp helpers/NNMC.hpp helpers/NNMCinline.hpp
+	g++ $(DEBUG) -Wall -o ../build/$@ applyNnmc.cpp helpers/NNMC.cpp -lbz2 $(OPENCV_LIBS)
 
-grabCut: grabCut.cpp classifier.cpp VisionDefs.hpp classifier.hpp
-	g++ $(DEBUG) $(CC_FLAGS) -o ../build/$@ grabCut.cpp classifier.cpp -lbz2 $(OPENCV_LIBS)
+grabCut: grabCut.cpp helpers/classifier.cpp helpers/VisionDefs.hpp helpers/classifier.hpp
+	g++ $(DEBUG) $(CC_FLAGS) -o ../build/$@ grabCut.cpp helpers/classifier.cpp -lbz2 $(OPENCV_LIBS)
 	
 thresholding: thresholding.cpp
 	g++ $(DEBUG) $(CC_FLAGS) -o ../build/$@ $< $(OPENCV_LIBS)
