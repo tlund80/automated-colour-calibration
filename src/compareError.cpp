@@ -13,6 +13,8 @@
 using namespace cv;
 using namespace std;
 
+bool isClassifiedColour(cv::Vec3b pixel);
+
 int main(int argc, char *argv[]) {
     if(argc != 3) {
         cerr << "Usage: ./compareError.cpp GROUND_TRUTH_IMAGE_PATH TEST_IMAGE_PATH" << endl;
@@ -33,7 +35,7 @@ int main(int argc, char *argv[]) {
         for(int x = 0; x < truthImage.cols; ++x) {
             Vec3b truth = truthImage.at<Vec3b>(y,x);
             Vec3b test = testImage.at<Vec3b>(y,x);
-            if(truth == test /*&& isClassifiedColour(truth)*/) {
+            if(truth == test && isClassifiedColour(truth)) {
                 numPixelMatches++;
             }
         }   
@@ -47,4 +49,11 @@ int main(int argc, char *argv[]) {
 
     cv::waitKey();
     return 0;
+}
+
+
+// Given a pixel, return true if it is a classified SPL colour, else false
+// This functions helps to exclude those pixels marked as 'unclassified' when performing pixel comparison
+bool isClassifiedColour(cv::Vec3b pixel) {
+    return true; // stub function at the moment
 }
