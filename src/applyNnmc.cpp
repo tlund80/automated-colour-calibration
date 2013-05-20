@@ -18,7 +18,7 @@ cv::Vec3b convertColourToVec3b(Colour c);
 
 int main(int argc, char *argv[]) {
     if(argc != 4) {
-        cerr << "Usage: ./applyNnmc IMAGE_PATH OUTPUT_IMAGE_PATH NNMC_PATH" << endl;
+        cerr << "Usage: ./applyNnmc [IMAGE_PATH] [OUTPUT_IMAGE_PATH] [NNMC_PATH]" << endl;
         return 1;
     }
     
