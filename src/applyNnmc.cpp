@@ -11,10 +11,9 @@
 #include "NNMCinline.hpp"
 #include "VisionDefs.hpp"
 #include "rgb2yuv.hpp"
+#include "colour2rgb.hpp"
 using namespace cv;
 using namespace std;
-
-cv::Vec3b convertColourToVec3b(Colour c);
 
 int main(int argc, char *argv[]) {
     if(argc != 4) {
@@ -36,7 +35,7 @@ int main(int argc, char *argv[]) {
             for(int x = 0; x < origImage.cols; ++x) {
                 PixelValues p = rgb2yuv(origImage.at<Vec3b>(y,x));
                 Colour classified = nnmc.classify(p.y,p.u,p.v);
-                Vec3b rgb = convertColourToVec3b(classified);
+                Vec3b rgb = convertColourToRgb(classified);
                 saliencyImage.at<Vec3b>(y,x) = rgb;
             }
         }
@@ -48,19 +47,4 @@ int main(int argc, char *argv[]) {
     cv::namedWindow(argv[2], CV_WINDOW_NORMAL);
     cv::imshow(argv[2],saliencyImage);
     return 0;
-}
-
-cv::Vec3b convertColourToVec3b(Colour c) {
-    switch(c) {
-        case cBALL:         return Vec3b(0,165,255);    break;
-        case cGOAL_YELLOW:  return Vec3b(0,255,255);    break;
-        case cROBOT_BLUE:   return Vec3b(204,153,0);    break;
-        case cROBOT_RED:    return Vec3b(0,0,139);      break;
-        case cFIELD_GREEN:  return Vec3b(0,128,0);      break;
-        case cWHITE:        return Vec3b(255,255,255);  break;
-        case cBLACK:        return Vec3b(0,0,0);        break;
-        case cBACKGROUND:   return Vec3b(153,0,204);    break;
-        case cUNCLASSIFIED: return Vec3b(255,255,153);  break;
-        default:            return Vec3b(0,0,0);        
-    }
 }
