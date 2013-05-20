@@ -51,10 +51,16 @@ int main(int argc, char *argv[]) {
 }
 
 cv::Vec3b convertColourToVec3b(Colour c) {
-    if(c == cGOAL_YELLOW) {
-        return Vec3b(0,255,255);
-    }
-    else {
-        return Vec3b(0,0,0);
+    switch(c) {
+        case cBALL:         return Vec3b(0,165,255);    break;
+        case cGOAL_YELLOW:  return Vec3b(0,255,255);    break;
+        case cROBOT_BLUE:   return Vec3b(204,153,0);    break;
+        case cROBOT_RED:    return Vec3b(0,0,139);      break;
+        case cFIELD_GREEN:  return Vec3b(0,128,0);      break;
+        case cWHITE:        return Vec3b(255,255,255);  break;
+        case cBLACK:        return Vec3b(0,0,0);        break;
+        case cBACKGROUND:   return Vec3b(153,0,204);    break;
+        case cUNCLASSIFIED: return Vec3b(255,255,153);  break;
+        default:            return Vec3b(0,0,0);        
     }
 }
