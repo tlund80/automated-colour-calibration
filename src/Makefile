@@ -3,7 +3,7 @@ OPENCV_LIBS := `pkg-config opencv --cflags --libs`
 DEBUG := -g
  
 compareError: compareError.cpp
-	g++ $(DEBUG) $(CC_FLAGS) -o ../build/$@ $<
+	g++ $(DEBUG) $(CC_FLAGS) -o ../build/$@ $< $(OPENCV_LIBS)
 
 applyNnmc: applyNnmc.cpp
 	g++ $(DEBUG) $(CC_FLAGS) -o ../build/$@ $<
