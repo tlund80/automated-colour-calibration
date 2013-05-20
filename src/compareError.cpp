@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
         }   
     }
     double errorRate = 1.0 - (double) numPixelMatches / (truthImage.rows * truthImage.cols);
-    cout << "Error Rate = " << std::setprecision(3) << errorRate << "%" << endl;
+    cout << "Error Rate = " << std::setprecision(4) << errorRate * 100 << "%" << endl;
     cv::namedWindow(argv[1],CV_WINDOW_NORMAL);
     cv::imshow(argv[1],truthImage);
     cv::namedWindow(argv[2],CV_WINDOW_NORMAL);
