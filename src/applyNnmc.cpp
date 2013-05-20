@@ -9,8 +9,12 @@
 #include <iostream>
 #include "NNMC.hpp"
 #include "NNMCinline.hpp"
+#include "VisionDefs.hpp"
+#include "rgb2yuv.hpp"
 using namespace cv;
 using namespace std;
+
+cv::Vec3b convertColourToVec3b(Colour c);
 
 int main(int argc, char *argv[]) {
     if(argc != 4) {
@@ -30,12 +34,10 @@ int main(int argc, char *argv[]) {
     else {
         for(int y = 0; y < origImage.rows; ++y) {
             for(int x = 0; x < origImage.cols; ++x) {
-                /*
                 PixelValues p = rgb2yuv(origImage.at<Vec3b>(y,x));
                 Colour classified = nnmc.classify(p.y,p.u,p.v);
                 Vec3b rgb = convertColourToVec3b(classified);
                 saliencyImage.at<Vec3b>(y,x) = rgb;
-                */
             }
         }
     }
@@ -46,4 +48,13 @@ int main(int argc, char *argv[]) {
     cv::namedWindow(argv[2], CV_WINDOW_NORMAL);
     cv::imshow(argv[2],saliencyImage);
     return 0;
+}
+
+cv::Vec3b convertColourToVec3b(Colour c) {
+    if(c == cGOAL_YELLOW) {
+        return Vec3b(0,255,255);
+    }
+    else {
+        return Vec3b(0,0,0);
+    }
 }
