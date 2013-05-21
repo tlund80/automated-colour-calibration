@@ -1,6 +1,4 @@
 #!/bin/bash
-# In progress atm....
-
 #FILL_UNCLASSIFIED_EXEC="./fillUnclassified"
 #APPLY_NNMC_EXEC="./applyNnmc"
 #COMPARE_ERROR_EXEC="./compareError"
@@ -13,30 +11,35 @@ function myecho {
 }
 
 myecho "==== Manual Calibration ===="
-echo "Open Offnao and select a frame"
+echo "Open Offnao and select a frame with representative colours"
 echo "Go to manual calibrationTab"
 echo "Save raw image"
 echo -n "Where is the original 640x480px raw image? "
 read origImage
-smallOutputImage="small_`basename $origImage`"
-echo "Downsampling from 640x480 to 160x120 ($origImage ---> $smallOutputImage)? "
-#convert $origImage -sample 160x120 $smallOutputImage
+smallOrigImage="small_`basename $origImage`"
+echo "Downsampling from 640x480 to 160x120 ($origImage ---> $smallOrigImage)"
+#convert $origImage -sample 160x120 $smallOrigImage
 echo "Calibrate and save nnmc file"
 echo -n "Where is the nnmc file? "
 read nnmc_manual
 classifiedManualImage="classified_manual_`basename $origImage`"
-echo "Applying the nnmc file ($smallOutputImage ---> $classifiedManualImage)"
-#$APPLY_NNMC_EXEC $smallOutputImage $classifiedManualImage $nnmc_manual
+echo "Applying the nnmc file ($smallOrigImage ---> $classifiedManualImage)"
+#eval $APPLY_NNMC_EXEC $smallOrigImage $classifiedManualImage $nnmc_manual
+echo "Manual Calibration Complete"
 
 echo
 
 myecho "==== Ground Truth ===="
-echo -n "Go to GIMP and classify " && myecho $smallOutputImage 
-echo -n "Where is the image you just classified? "
-read truthImage
 classifiedTruthImage="classified_truth_`basename $origImage`"
-echo "Filling in unclassified pixels ($truthImage-> $classifiedTruthImage)"
-#$FILL_UNCLASSIFIED_EXEC $truthImage 
+echo "Copying ($smallOrigImage ---> $classifiedTruthImage)"
+cp $smallOrigImage $classifiedTruthImage
+echo -n "Go to GIMP and classify " && myecho $classifiedTruthImage 
+echo -n "Finished classifying? "
+read confirm
+fillClassifiedTruthImage="filled_$classifiedTruthImage"
+echo "Filling in unclassified pixels ($classifiedTruthImage ---> $fillClassifiedTruthImage)"
+#eval $FILL_UNCLASSIFIED_EXEC $classifiedTruthImage $fillClassifiedTruthImage
+echo "Ground Truth Complete"
 
 echo
 
@@ -44,16 +47,19 @@ myecho "==== GrabCut ===="
 echo "Open $origImage in GIMP"
 echo "Write GrabCut template"
 echo "Applying Grabcut"
-#$GRABCUT_EXEC $origImage
-echo -n "Where is the nnmc that was just produced? "
-read nnmc_grabcut
+nnmc_grabcut="grabcut.nnmc"
+#eval $GRABCUT_EXEC $origImage $nnmc_grabcut
 classifiedGrabcutImage="classified_grabcut_`basename $origImage`"
-#$APPLY_NNMC_EXEC $smallOutputImage sified_grabcut_`basename $origImage` $nnmc_grabcut_
+echo "Applying the nnmc file ($smallOrigImage ---> $classifiedGrabcutImage)"
+#eval $APPLY_NNMC_EXEC $smallOrigImage $classifiedGrabcutImage $nnmc_grabcut
+echo "Grabcut Complete"
 
 echo
 
 myecho "==== Compare Errors ===="
-#echo -n `$COMPARE_ERROR_EXEC $classifiedTruthImage $classifiedManualImage`
+echo -e "Manual\tAutomatic"
+echo -e "======\t========="
+#echo -n `eval $COMPARE_ERROR_EXEC $fillClassifiedTruthImage $classifiedManualImage`
 #echo -n "\t"
-#echo -n `$COMPARE_ERROR_EXEC $classifiedTruthImage $classifiedGrabcutImage`
+#echo -n `eval $COMPARE_ERROR_EXEC $fillClassifiedTruthImage $classifiedGrabcutImage`
 
