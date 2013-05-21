@@ -1,7 +1,7 @@
 #!/bin/bash
-#FILL_UNCLASSIFIED_EXEC="./fillUnclassified"
-#APPLY_NNMC_EXEC="./applyNnmc"
-#COMPARE_ERROR_EXEC="./compareError"
+#FILL_UNCLASSIFIED_EXEC="../build/fillUnclassified"
+#APPLY_NNMC_EXEC="../build/applyNnmc"
+#COMPARE_ERROR_EXEC="../build/compareError"
 
 # Highlights the arguments with a sharp green
 function myecho {
