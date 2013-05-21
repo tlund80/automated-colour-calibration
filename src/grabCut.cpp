@@ -13,6 +13,11 @@ PixelValues rgb2yuv(cv::Vec3b i);
 
 // Top left corner of image is (0,0)
 int main(int argc, char** argv) {
+    if(argc != 3) {
+        cerr << "Usage: ./grabCut [IMAGE_PATH] [OUTPUT_NNMC_PATH]" << endl;
+        return 1;
+    }
+
     std::vector<cv::Mat> origImages; // list of images, same images are not copied, they merely reference to the same block of memory
     std::vector<cv::Mat> boxedImages; // list of images with the bounding box overlayed
     std::vector<int> featureColours; // list of colours for each feature
@@ -20,8 +25,7 @@ int main(int argc, char** argv) {
     std::vector<cv::Mat> featuresExtracted; // list of extracted foreground images, bg is black 
 
     //****************** Add features ***************
-    cv::Mat oImage = imread("../images/05-15_0/01.png",1);
-
+    cv::Mat oImage = imread(argv[1],1);
     // Ball
     cv::Rect ball(235,370,50,50);
     features.push_back(ball);
@@ -62,39 +66,7 @@ int main(int argc, char** argv) {
     for(size_t i = 0; i < numImagesToFill; ++i) {
         origImages.push_back(oImage);
     }
-    /*
-    cv::Mat ballAndFieldLine = imread("../images/005.png",1);
-    for(int i = 0; i < 3; ++i) {
-        origImages.push_back(ballAndFieldLine);
-    }
-    // Ball 005.png
-    cv::Rect ball(420,150,100,100);
-    features.push_back(ball);
-    featureColours.push_back(cBALL);
-    // Fieldline 005.png
-    cv::Rect fieldLine(250,100,150,380);
-    features.push_back(fieldLine);
-    featureColours.push_back(cWHITE);
-    cv::Rect fieldGreen(30,160,220,320);
-    features.push_back(fieldGreen);
-    featureColours.push_back(cFIELD_GREEN);
-*/
-/*
-    // 030.png Goalpost + Ball
-    cv::Mat goalpost = imread("../images/030.png",1);
-    for(int i = 0; i < 3; ++i) {
-        origImages.push_back(goalpost);
-    }
-    cv::Rect goalpost_left(110,40,50,240);
-    features.push_back(goalpost_left);
-    featureColours.push_back(cGOAL_YELLOW);
-    cv::Rect goalpost_top(110,65,400,30);
-    features.push_back(goalpost_top);
-    featureColours.push_back(cGOAL_YELLOW);
-    cv::Rect goalpost_right(460,50,50,240);
-    features.push_back(goalpost_right);
-    featureColours.push_back(cGOAL_YELLOW);
-*/
+
     //************* Process all features *********************
     for(size_t i = 0; i < features.size(); ++i) {
         // go through each bounding box
@@ -145,24 +117,6 @@ int main(int argc, char** argv) {
                     // update radii
                     float weight = 1;
                     int yRadius = 2, uRadius = 4, vRadius = 4;
-#if 0
-                    bool autoWeight = true;
-                    if (autoWeight) {
-                        float weights[CMAX];
-                        cl->colourInfo(p.y, p.u, p.v, weights);
-                        float totalWeight = 0.0;
-                        for (int i = 0; i < CMAX; i++) {
-                            totalWeight += weights[i];
-                        }
-                        yRadius = static_cast<int>(10.0 / (1.0 + totalWeight));
-                        uRadius = static_cast<int>(20.0 / (1.0 + totalWeight));
-                        vRadius = static_cast<int>(20.0 / (1.0 + totalWeight));
-                        inRange(yRadius, 1, 10);
-                        inRange(uRadius, 1, 20);
-                        inRange(vRadius, 1, 20);
-                        weight = 1.0 + (totalWeight / 10.0);
-                    }
-#endif
                     // classify!
                     Colour colour = static_cast<Colour>(featureColours[i]);
                     if (!cl->isMostlyClassified(p.y, p.u, p.v, colour)) {
@@ -178,18 +132,12 @@ int main(int argc, char** argv) {
     }
 
     // Save the point cloud as an nnmc file
-    cl->saveNnmc("../build/output.nnmc");
+    cl->saveNnmc(argv[2]);
 
     // display result
     cv::namedWindow("Original", CV_WINDOW_NORMAL);
     cv::imshow("Original",oImage);
-    /*
-    cv::namedWindow("BallAndFieldLine", CV_WINDOW_NORMAL);
-    cv::imshow("BallAndFieldLine",ballAndFieldLine);
 
-    cv::namedWindow("Goalpost",CV_WINDOW_NORMAL);
-    cv::imshow("Goalpost",goalpost);
-*/
     for(size_t i = 0; i< featuresExtracted.size();++i) {
         std::ostringstream stream;
         stream << "Segmented Image (" << i << ")";
