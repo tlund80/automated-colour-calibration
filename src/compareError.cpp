@@ -17,7 +17,7 @@ bool isClassifiedColour(cv::Vec3b pixel);
 
 int main(int argc, char *argv[]) {
     if(argc != 3) {
-        cerr << "Usage: ./compareError.cpp GROUND_TRUTH_IMAGE_PATH TEST_IMAGE_PATH" << endl;
+        cerr << "Usage: ./compareError [GROUND_TRUTH_IMAGE_PATH] [TEST_IMAGE_PATH]" << endl;
         return 1;
     }
 

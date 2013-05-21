@@ -16,7 +16,7 @@ bool isClassifiedColour(cv::Vec3b pixel);
 
 int main(int argc, char *argv[]) {
     if(argc != 3) {
-        cerr << "Usage: ./fillUnclassified.cpp [IMAGE_PATH] [FILLED_IMAGE_PATH]" << endl;
+        cerr << "Usage: ./fillUnclassified [IMAGE_PATH] [FILLED_IMAGE_PATH]" << endl;
         return 1;
     }
 
