@@ -18,19 +18,25 @@ function confirm {
     read done
 }
 
+set -e
 myecho "==== Manual Calibration ===="
 echo "Open Offnao and select a frame with representative colours"
 echo "Go to manual calibrationTab"
 echo "Save raw image"
 echo -n "Where is the original 640x480px raw image? "
 read IMAGE_PATH
+if [ ! -f "$IMAGE_PATH" ]
+then
+    echo "Invalid image path: $IMAGE_PATH"
+    exit 1
+fi
 INPUT_DIR=`dirname $IMAGE_PATH`
 origImage="$IMAGE_PATH"
 smallOrigImage="$INPUT_DIR/small_original.png"
 echo "Downsampling from 640x480 to 160x120 ($origImage ---> $smallOrigImage)"
 convert $origImage -sample 160x120 $smallOrigImage
 nnmc_manual="$INPUT_DIR/manual.nnmc"
-echo "Calibrate and save nnmc file as $nnmc_manual"
+echo "Calibrate and save nnmc file as " && myecho $nnmc_manual
 confirm
 classifiedManualImage="$INPUT_DIR/manual.png"
 echo "Applying the nnmc file ($smallOrigImage ---> $classifiedManualImage)"
@@ -57,7 +63,7 @@ confirm
 myecho "==== GrabCut ===="
 echo "Open $origImage in GIMP"
 grabCutTemplate="$INPUT_DIR/features.template"
-echo "Write GrabCut template as $grabCutTemplate"
+echo "Write GrabCut template as " && myecho $grabCutTemplate
 confirm
 nnmc_grabcut="$INPUT_DIR/grabcut.nnmc"
 echo "Applying Grabcut"
