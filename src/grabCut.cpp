@@ -3,6 +3,7 @@
 #include "helpers/VisionDefs.hpp" // runswift code
 #include "helpers/classifier.hpp" // runswift code
 #include "helpers/rgb2yuv.hpp"
+#include <fstream>
 #include <iostream>
 
 using namespace cv;
@@ -11,10 +12,50 @@ using namespace std;
 void inRange(int &n, int min, int max);
 PixelValues rgb2yuv(cv::Vec3b i);
 
+struct feature {
+    Colour colour;
+    int x;
+    int y;
+    int width;
+    int height;
+};
+
+// Reads features from a text file
+vector<feature> read_ftrs(const char* file_name) {
+    ifstream is(file_name);
+    vector<feature> ftrs;
+    string line;
+    int val = -99999;
+    if(is.is_open()) {
+        while(is.good()) {
+            getline(is,line);
+            stringstream ss(line.c_str());
+            // only accepts lines with the first char being a digit 
+            // i.e. it also skips lines such as those starting with '#'
+            if(isdigit(ss.peek())) {
+                feature f;
+                for(int i = 0; ss >> val; ++i) {
+                    switch(i) {
+                        case 0: f.colour = (Colour)val;     break;
+                        case 1: f.x = val;                  break;
+                        case 2: f.y = val;                  break;
+                        case 3: f.width = val;              break;
+                        case 4: f.height = val;             break;
+                    }
+                }
+                ftrs.push_back(f);
+            }
+        }
+        is.close();
+    }
+
+    return ftrs;
+}
+
 // Top left corner of image is (0,0)
 int main(int argc, char** argv) {
-    if(argc != 3) {
-        cerr << "Usage: ./grabCut [IMAGE_PATH] [OUTPUT_NNMC_PATH]" << endl;
+    if(argc != 4) {
+        cerr << "Usage: ./grabCut [IMAGE_PATH] [GRABCUT_TEMPLATE] [OUTPUT_NNMC_PATH]" << endl;
         return 1;
     }
 
@@ -26,6 +67,16 @@ int main(int argc, char** argv) {
 
     //****************** Add features ***************
     cv::Mat oImage = imread(argv[1],1);
+
+    // Parse the GrabCut template which is in the JSON format
+    std::vector<feature> featuresTemplate = read_ftrs(argv[2]);
+    for(size_t i = 0; i < featuresTemplate.size(); ++i) {
+        feature f = featuresTemplate[i];
+        features.push_back(cv::Rect(f.x,f.y,f.width,f.height));
+        featureColours.push_back(f.colour);
+        origImages.push_back(oImage);
+    }
+    /*
     // Ball
     cv::Rect ball(235,370,50,50);
     features.push_back(ball);
@@ -64,9 +115,9 @@ int main(int argc, char** argv) {
     // Associate each feature with its source image
     size_t numImagesToFill = features.size() - origImages.size();
     for(size_t i = 0; i < numImagesToFill; ++i) {
-        origImages.push_back(oImage);
+        // Extracted out
     }
-
+*/
     //************* Process all features *********************
     for(size_t i = 0; i < features.size(); ++i) {
         // go through each bounding box
@@ -132,7 +183,7 @@ int main(int argc, char** argv) {
     }
 
     // Save the point cloud as an nnmc file
-    cl->saveNnmc(argv[2]);
+    cl->saveNnmc(argv[3]);
 
     // display result
     cv::namedWindow("Original", CV_WINDOW_NORMAL);
