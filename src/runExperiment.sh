@@ -1,4 +1,8 @@
 #!/bin/bash
+# By Calvin Tam
+# Interative script that represents the workflow needed to perform the experiment
+# At each stage you will be prompted with a message asking if you want to execute or not
+# This is useful if you have already performed the step(s) and want to skip over it
 BUILD_DIR="../build"
 
 FILL_UNCLASSIFIED_EXEC="$BUILD_DIR/fillUnclassified"
