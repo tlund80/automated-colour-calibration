@@ -8,6 +8,8 @@
  */
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
+#include "helpers/VisionDefs.hpp"
+#include "helpers/colour2rgb.hpp"
 #include <iostream>
 #include <iomanip>
 using namespace cv;
@@ -41,7 +43,7 @@ int main(int argc, char *argv[]) {
         }   
     }
     double errorRate = 1.0 - (double) numPixelMatches / (truthImage.rows * truthImage.cols);
-    cout << "Error Rate = " << std::setprecision(4) << errorRate * 100 << "%" << endl;
+    cout << std::setprecision(4) << errorRate * 100 << "%" << endl;
     cv::namedWindow(argv[1],CV_WINDOW_NORMAL);
     cv::imshow(argv[1],truthImage);
     cv::namedWindow(argv[2],CV_WINDOW_NORMAL);
