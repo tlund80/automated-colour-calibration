@@ -46,9 +46,11 @@ echo
 myecho "==== GrabCut ===="
 echo "Open $origImage in GIMP"
 echo "Write GrabCut template"
-echo "Applying Grabcut"
+echo -n "Where is the GrabCut template? "
+read grabCutTemplate
 nnmc_grabcut="grabcut.nnmc"
-#eval $GRABCUT_EXEC $origImage $nnmc_grabcut
+echo "Applying Grabcut"
+#eval $GRABCUT_EXEC $origImage $grabCutTemplate $nnmc_grabcut
 classifiedGrabcutImage="classified_grabcut_`basename $origImage`"
 echo "Applying the nnmc file ($smallOrigImage ---> $classifiedGrabcutImage)"
 #eval $APPLY_NNMC_EXEC $smallOrigImage $classifiedGrabcutImage $nnmc_grabcut
