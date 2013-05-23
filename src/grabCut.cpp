@@ -87,15 +87,35 @@ int main(int argc, char** argv) {
         cv::Mat foreground(origImages[i].size(),CV_8UC3,cv::Scalar(0,0,0));
         cv::Rect rectangle = features[i];
         // GrabCut segmentation
+#if 0
         cv::grabCut(origImages[i],    // input image
                 result,   // segmentation result
                 rectangle,// rectangle containing foreground 
                 bgModel,fgModel, // models
                 1,        // number of iterations
                 cv::GC_INIT_WITH_RECT); // use rectangle
+#else
 
-        // Get the pixels marked as likely foreground
-        cv::compare(result,cv::GC_PR_FGD,result,cv::CMP_EQ);
+        //Fill with the background value
+        result = cv::Mat::ones(origImages[i].size(), CV_8U) * cv::GC_BGD;
+
+        //Fill the bounding box 'rectangle' with the probably-foreground value.
+        cv::rectangle(result, rectangle, cv::Scalar(cv::GC_PR_FGD),-1,8,0);
+
+        //Fill a smaller rectangle within the 'rectangle' with the foreground value.
+        // This is a scaled fovea that is proportionate to the bounding box
+        // Centred and scaled down to 20% on both axes
+        int x = rectangle.x + (0.4 * rectangle.width);
+        int y = rectangle.y + (0.4 * rectangle.height);
+        int width = 0.2 * rectangle.width;
+        int height = 0.2 * rectangle.height;
+        cv::Rect sureFG(x,y,width,height);
+        cv::rectangle(result, sureFG , cv::Scalar(cv::GC_FGD),-1,8,0);
+        cv::grabCut(origImages[i], result, sureFG, bgModel, fgModel, 1, cv::GC_INIT_WITH_MASK);
+#endif
+        // Get the pixels marked as foreground
+        // To use Grabcut to extract the likely foreground pixels, change to GC_FGD
+        cv::compare(result,cv::GC_FGD,result,cv::CMP_EQ);
         // Generate output image
         origImages[i].copyTo(foreground,result); // bg pixels not copied
 
