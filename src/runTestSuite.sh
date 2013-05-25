@@ -46,7 +46,7 @@ myecho "==== Run Test Suite ===="
 echo
 for test_dir in $(find "../images/test" -type d -regextype posix-egrep -regex ".*/[0-9]+$")
 do
-    echo "Running test: $i"
+    echo "Running test: $test_dir"
     
     # Downsample the original test image
     smallOrigImage="$test_dir/small_original.png"
