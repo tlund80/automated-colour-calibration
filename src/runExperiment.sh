@@ -74,38 +74,47 @@ echo "Ground Truth Complete"
 askExecute
 echo
 
-myecho "==== GrabCut ===="
+# Preparation for both automatic colour calibration techniques
 echo "Open $origImage in GIMP"
-grabCutTemplate="$INPUT_DIR/features.template"
-echo -n "Write GrabCut template as " && myecho $grabCutTemplate
+featureTemplate="$INPUT_DIR/features.template"
+echo -n "Write feature template as " && myecho $featureTemplate
 askExecute
-echo "Apply GrabCut template"
+
+myecho "==== Scaled Fovea + GrabCut ===="
+echo "Apply feature template"
+classifiedFoveaImage="$INPUT_DIR/fovea.png"
 classifiedGrabcutImage="$INPUT_DIR/grabcut.png"
 askExecute '
     happy="no"
     until [ "$happy" == "y" ]
     do
-        echo -n "Update the GrabCut template " && myecho $grabCutTemplate
-        askExecute
+        echo -n "Update the feature template " && myecho $featureTemplate
+        nnmc_fovea="$INPUT_DIR/fovea.nnmc"
         nnmc_grabcut="$INPUT_DIR/grabcut.nnmc"
-        echo "Apply Grabcut"
-        askExecute "$GRABCUT_EXEC $origImage $grabCutTemplate $nnmc_grabcut"
+        echo "Apply Fovea + Grabcut"
+        askExecute "$GRABCUT_EXEC grabcut $origImage $featureTemplate $nnmc_grabcut &&
+                    $GRABCUT_EXEC fovea $origImage $featureTemplate $nnmc_fovea"
+        echo "Apply the nnmc file ($smallOrigImage ---> $classifiedFoveaImage)"
         echo "Apply the nnmc file ($smallOrigImage ---> $classifiedGrabcutImage)"
-        askExecute "$APPLY_NNMC_EXEC $smallOrigImage $classifiedGrabcutImage $nnmc_grabcut"
-        echo "Happy with the grabcut results? [\"y\" to finish, else redo template] "
+        askExecute "$APPLY_NNMC_EXEC $smallOrigImage $classifiedGrabcutImage $nnmc_grabcut &&
+                    $APPLY_NNMC_EXEC $smallOrigImage $classifiedFoveaImage $nnmc_fovea"
+        echo "Happy with the results? [\"y\" to finish, else redo template] "
         read happy
     done
 '
-echo "Grabcut Complete"
+echo "Automated Colour Calibration Complete"
 
 askExecute
 echo
 
 myecho "==== Compare Errors ===="
 echo "== Error Rates in % =="
-echo -e "Manual\tAutomatic"
-echo -e "======\t========="
+echo -e "Manual\tAuto (Fovea)\tAuto (GrabCut)"
+echo -e "======\t============\t=============="
 echo -n `eval $COMPARE_ERROR_EXEC $fillClassifiedTruthImage $classifiedManualImage`
 echo -en "\t"
+echo -n `eval $COMPARE_ERROR_EXEC $fillClassifiedTruthImage $classifiedFoveaImage`
+echo -en "\t"
 echo -n `eval $COMPARE_ERROR_EXEC $fillClassifiedTruthImage $classifiedGrabcutImage`
+
 echo
