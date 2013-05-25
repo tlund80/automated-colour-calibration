@@ -14,7 +14,7 @@ COMPARE_ERROR_EXEC="$BUILD_DIR/compareError"
 function myecho {
     echo -ne '\033[32;1m'
     echo -n $@
-    echo -e '\033[0m'
+    echo -ne '\033[0m'
 }
 
 function confirm {
@@ -43,6 +43,7 @@ INPUT_DIR=`dirname $NNMC_PATH`
 nnmc_grabcut="$INPUT_DIR/grabcut.nnmc"
 nnmc_manual="$INPUT_DIR/manual.nnmc"
 myecho "==== Run Test Suite ===="
+echo
 for test_dir in $(find "../images/test" -type d -regextype posix-egrep -regex ".*/[0-9]+$")
 do
     echo "Running test: $i"
@@ -77,7 +78,7 @@ do
             echo "Copy ($smallOrigImage ---> $classifiedTruthImage)"
             cp $smallOrigImage $classifiedTruthImage
         fi
-        echo -n "Go to GIMP and classify " && myecho $classifiedTruthImage 
+        echo -n "Go to GIMP and classify " && myecho $classifiedTruthImage && echo 
         askExecute
         echo "Fill in unclassified pixels ($classifiedTruthImage ---> $fillClassifiedTruthImage)"
         askExecute '$FILL_UNCLASSIFIED_EXEC $classifiedTruthImage $fillClassifiedTruthImage'
@@ -87,8 +88,8 @@ do
     echo "== Error Rates in % =="
     echo -e "Manual\tAutomatic"
     echo -e "======\t========="
-    echo -n `eval $COMPARE_ERROR_EXEC $fillClassifiedTruthImage $classifiedManualImage`
+    myecho `eval $COMPARE_ERROR_EXEC $fillClassifiedTruthImage $classifiedManualImage`
     echo -en "\t"
-    echo -n `eval $COMPARE_ERROR_EXEC $fillClassifiedTruthImage $classifiedGrabcutImage`
+    myecho `eval $COMPARE_ERROR_EXEC $fillClassifiedTruthImage $classifiedGrabcutImage`
     echo
 done
