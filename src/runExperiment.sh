@@ -38,7 +38,7 @@ echo "Open Offnao and select a frame with representative colours"
 echo "Go to manual calibrationTab"
 echo "Save raw image"
 echo -n "Where is the original 640x480px raw image? "
-read IMAGE_PATH
+read -e IMAGE_PATH
 if [ ! -f "$IMAGE_PATH" ]
 then
     echo "Invalid image path: $IMAGE_PATH"
