@@ -32,7 +32,7 @@ function askExecute {
 }
 
 set -e
-echo -n "Where is the grabCut.nnmc/manual.nnmc file? "
+echo -n "Where is the manual.nnmc/grabcut.nnmc/fovea.nnmc file? "
 read -e NNMC_PATH
 if [ ! -f "$NNMC_PATH" ]
 then
@@ -40,6 +40,7 @@ then
     exit 1
 fi
 INPUT_DIR=`dirname $NNMC_PATH`
+nnmc_fovea="$INPUT_DIR/fovea.nnmc"
 nnmc_grabcut="$INPUT_DIR/grabcut.nnmc"
 nnmc_manual="$INPUT_DIR/manual.nnmc"
 myecho "==== Run Test Suite ===="
@@ -64,6 +65,11 @@ do
     echo "Apply the nnmc file ($smallOrigImage ---> $classifiedManualImage)"
     eval "$APPLY_NNMC_EXEC $smallOrigImage $classifiedManualImage $nnmc_manual"
 
+    # Apply the fovea.nnmc
+    classifiedFoveaImage="$test_dir/fovea.png"
+    echo "Apply the nnmc file ($smallOrigImage ---> $classifiedFoveaImage)"
+    eval "$APPLY_NNMC_EXEC $smallOrigImage $classifiedFoveaImage $nnmc_fovea"
+    
     # Apply the grabcut.nnmc
     classifiedGrabcutImage="$test_dir/grabcut.png"
     echo "Apply the nnmc file ($smallOrigImage ---> $classifiedGrabcutImage)"
@@ -84,12 +90,15 @@ do
         askExecute '$FILL_UNCLASSIFIED_EXEC $classifiedTruthImage $fillClassifiedTruthImage'
     fi
 
-    # Compare the error
+    myecho "==== Compare Errors ===="
     echo "== Error Rates in % =="
-    echo -e "Manual\tAutomatic"
-    echo -e "======\t========="
-    myecho `eval $COMPARE_ERROR_EXEC $fillClassifiedTruthImage $classifiedManualImage`
+    echo -e "Manual\tFovea\tGrabCut"
+    echo -e "======\t=====\t======="
+    echo -n `eval $COMPARE_ERROR_EXEC $fillClassifiedTruthImage $classifiedManualImage`
     echo -en "\t"
-    myecho `eval $COMPARE_ERROR_EXEC $fillClassifiedTruthImage $classifiedGrabcutImage`
+    echo -n `eval $COMPARE_ERROR_EXEC $fillClassifiedTruthImage $classifiedFoveaImage`
+    echo -en "\t"
+    echo -n `eval $COMPARE_ERROR_EXEC $fillClassifiedTruthImage $classifiedGrabcutImage`
+
     echo
 done
