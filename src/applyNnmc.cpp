@@ -46,5 +46,6 @@ int main(int argc, char *argv[]) {
     cv::imshow(argv[1],origImage);
     cv::namedWindow(argv[2], CV_WINDOW_NORMAL);
     cv::imshow(argv[2],saliencyImage);
+    waitKey();
     return 0;
 }

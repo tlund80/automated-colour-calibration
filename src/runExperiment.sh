@@ -109,8 +109,8 @@ echo
 
 myecho "==== Compare Errors ===="
 echo "== Error Rates in % =="
-echo -e "Manual\tAuto (Fovea)\tAuto (GrabCut)"
-echo -e "======\t============\t=============="
+echo -e "Manual\tFovea\tGrabCut"
+echo -e "======\t=====\t======="
 echo -n `eval $COMPARE_ERROR_EXEC $fillClassifiedTruthImage $classifiedManualImage`
 echo -en "\t"
 echo -n `eval $COMPARE_ERROR_EXEC $fillClassifiedTruthImage $classifiedFoveaImage`
