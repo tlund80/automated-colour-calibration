@@ -54,10 +54,11 @@ vector<feature> read_ftrs(const char* file_name) {
 
 // Top left corner of image is (0,0)
 int main(int argc, char** argv) {
-    if(argc != 4) {
-        cerr << "Usage: ./grabCut [IMAGE_PATH] [GRABCUT_TEMPLATE] [OUTPUT_NNMC_PATH]" << endl;
+    if(argc != 5 || !(std::string(argv[1]) == "grabcut" || std::string(argv[1]) == "fovea")) {
+        cerr << "Usage: ./grabCut [ALGORITHM=(grabcut|fovea)] [IMAGE_PATH] [GRABCUT_TEMPLATE] [OUTPUT_NNMC_PATH]" << endl;
         return 1;
     }
+
 
     std::vector<cv::Mat> origImages; // list of images, same images are not copied, they merely reference to the same block of memory
     std::vector<cv::Mat> boxedImages; // list of images with the bounding box overlayed
@@ -66,10 +67,9 @@ int main(int argc, char** argv) {
     std::vector<cv::Mat> featuresExtracted; // list of extracted foreground images, bg is black 
 
     //****************** Add features ***************
-    cv::Mat oImage = imread(argv[1],1);
+    cv::Mat oImage = imread(argv[2],1);
 
-    // Parse the GrabCut template which is in the JSON format
-    std::vector<feature> featuresTemplate = read_ftrs(argv[2]);
+    std::vector<feature> featuresTemplate = read_ftrs(argv[3]);
     for(size_t i = 0; i < featuresTemplate.size(); ++i) {
         feature f = featuresTemplate[i];
         features.push_back(cv::Rect(f.x,f.y,f.width,f.height));
@@ -86,15 +86,6 @@ int main(int argc, char** argv) {
         cv::Mat bgModel,fgModel; // the models (internally used)
         cv::Mat foreground(origImages[i].size(),CV_8UC3,cv::Scalar(0,0,0));
         cv::Rect rectangle = features[i];
-        // GrabCut segmentation
-#if 0
-        cv::grabCut(origImages[i],    // input image
-                result,   // segmentation result
-                rectangle,// rectangle containing foreground 
-                bgModel,fgModel, // models
-                1,        // number of iterations
-                cv::GC_INIT_WITH_RECT); // use rectangle
-#else
 
         //Fill with the background value
         result = cv::Mat::ones(origImages[i].size(), CV_8U) * cv::GC_BGD;
@@ -111,11 +102,20 @@ int main(int argc, char** argv) {
         int height = 0.2 * rectangle.height;
         cv::Rect sureFG(x,y,width,height);
         cv::rectangle(result, sureFG , cv::Scalar(cv::GC_FGD),-1,8,0);
-        cv::grabCut(origImages[i], result, sureFG, bgModel, fgModel, 1, cv::GC_INIT_WITH_MASK);
-#endif
+        
+        // By default pick only certain foreground pixels
+        int whichPixelsToSelect = cv::GC_FGD;
+        if(std::string(argv[1]) == "grabcut") {
+            cv::grabCut(origImages[i], result, sureFG, bgModel, fgModel, 1, cv::GC_INIT_WITH_MASK);
+            // When using Grabcut, switch to picking probable foreground pixels (GC_PR_FGD)
+            whichPixelsToSelect = cv::GC_PR_FGD;
+            // Reset the 'certain' foreground pixels into probable foreground pixels
+            // for ease of extraction in the next step
+            cv::rectangle(result, sureFG , cv::Scalar(cv::GC_PR_FGD),-1,8,0);
+        }
+        
+        cv::compare(result,whichPixelsToSelect,result,cv::CMP_EQ);
         // Get the pixels marked as foreground
-        // To use Grabcut to extract the likely foreground pixels, change to GC_FGD
-        cv::compare(result,cv::GC_FGD,result,cv::CMP_EQ);
         // Generate output image
         origImages[i].copyTo(foreground,result); // bg pixels not copied
 
@@ -162,7 +162,7 @@ int main(int argc, char** argv) {
     }
 
     // Save the point cloud as an nnmc file
-    cl->saveNnmc(argv[3]);
+    cl->saveNnmc(argv[4]);
 
     // display result
     cv::namedWindow("Original", CV_WINDOW_NORMAL);
