@@ -95,11 +95,12 @@ int main(int argc, char** argv) {
 
         //Fill a smaller rectangle within the 'rectangle' with the foreground value.
         // This is a scaled fovea that is proportionate to the bounding box
-        // Centred and scaled down to 20% on both axes
-        int x = rectangle.x + (0.4 * rectangle.width);
-        int y = rectangle.y + (0.4 * rectangle.height);
-        int width = 0.2 * rectangle.width;
-        int height = 0.2 * rectangle.height;
+        // Centred and scaled down by SCALE  on both axes
+        const double SCALE = 0.2;
+        int x = rectangle.x + ((1-SCALE)/2 * rectangle.width);
+        int y = rectangle.y + ((1-SCALE)/2 * rectangle.height);
+        int width = SCALE * rectangle.width;
+        int height = SCALE * rectangle.height;
         cv::Rect sureFG(x,y,width,height);
         cv::rectangle(result, sureFG , cv::Scalar(cv::GC_FGD),-1,8,0);
         
