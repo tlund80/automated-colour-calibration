@@ -57,6 +57,11 @@ echo
 while read test_dir
 do
     test_dir="../images/test/$test_dir"
+    if [ ! -d "$test_dir" ]
+    then
+        echo "Invalid test_dir: $test_dir"
+        exit 1
+    fi
     echo "Running test: $test_dir"
     
     # Downsample the original test image
