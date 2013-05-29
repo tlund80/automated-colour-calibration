@@ -91,6 +91,7 @@ do
     fi
 
     myecho "==== Compare Errors ===="
+    echo
     echo "== Error Rates in % =="
     echo -e "Manual\tFovea\tGrabCut"
     echo -e "======\t=====\t======="
