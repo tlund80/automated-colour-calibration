@@ -43,10 +43,20 @@ INPUT_DIR=`dirname $NNMC_PATH`
 nnmc_fovea="$INPUT_DIR/fovea.nnmc"
 nnmc_grabcut="$INPUT_DIR/grabcut.nnmc"
 nnmc_manual="$INPUT_DIR/manual.nnmc"
+
+echo -n "Where is the test_dir.txt file? "
+read -e TEST_DIRS
+if [ ! -f "$TEST_DIRS" ]
+then
+    echo "Invalid test_dir.txt path: $TEST_DIRS"
+    exit 1
+fi
 myecho "==== Run Test Suite ===="
 echo
-for test_dir in $(find "../images/test" -type d -regextype posix-egrep -regex ".*/[0-9]+$")
+# Slurp $TEST_DIRS then read the directory on each line
+while read test_dir
 do
+    test_dir="../images/test/$test_dir"
     echo "Running test: $test_dir"
     
     # Downsample the original test image
@@ -102,4 +112,4 @@ do
     echo -n `eval $COMPARE_ERROR_EXEC $fillClassifiedTruthImage $classifiedGrabcutImage`
 
     echo
-done
+done < $TEST_DIRS
