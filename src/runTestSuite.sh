@@ -45,7 +45,8 @@ nnmc_grabcut="$INPUT_DIR/grabcut.nnmc"
 nnmc_manual="$INPUT_DIR/manual.nnmc"
 myecho "==== Run Test Suite ===="
 echo
-for test_dir in $(find "../images/test" -type d -regextype posix-egrep -regex ".*/[0-9]+$")
+# Test in descending order
+for test_dir in $(find "../images/test" -type d -regextype posix-egrep -regex ".*/[0-9]+$" | sort -r)
 do
     echo "Running test: $test_dir"
     
