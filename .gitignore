@@ -1,7 +1,5 @@
-*.png
 *.swp
 *~
-images/
 build/
 src/ideas.txt
 src/test_dir.txt

@@ -1,0 +1,23 @@
+# Do not add leading whitespace (else it will be ignored!)
+# A non-numeric first char signifies a comment
+# Colour = Colour enum in VisionDefs.hpp
+#   cBALL = 0,
+#   cGOAL_BLUE = 1,
+#   cGOAL_YELLOW = 2,
+#   cROBOT_BLUE = 1,
+#   cROBOT_RED = 4,
+#   cFIELD_GREEN = 5,
+#   cWHITE = 6,
+#   cBLACK = 7,
+#   cBACKGROUND = 8,
+#   cUNCLASSIFIED = 9,
+#   cNUM_COLOURS = 10
+# x = the x coordinate of the top left corner of the bounding rectangle
+# y = the y coordinate of the top left corner of the bounding rectangle
+# width = the width in pixels along the x axis (positive direction is downwards)
+# height = the height in pixels along the y axis (positive direction is rightwards)
+#
+Colour  x       y       width   height
+======================================
+0       355     300     70      70
+6       226     202     70      278
